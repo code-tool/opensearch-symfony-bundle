@@ -28,12 +28,14 @@ class IndexConfigFactory
         if (false === \array_key_exists($name, $this->indexes)) {
             throw new \InvalidArgumentException(\sprintf('Index "%s" not found', $name));
         }
+        $config = $this->indexes[$name];
 
         return new IndexConfig(
             $name,
-            $this->indexes['type'],
-            $this->indexes['settings'] ?? [],
-            $this->indexes['mappings'] ?? []
+            $config[IndexConfig::FIELD_TYPE],
+            $config[IndexConfig::FIELD_PATTERN] ?? null,
+            $config[IndexConfig::FIELD_SETTINGS] ?? [],
+            $config[IndexConfig::FIELD_MAPPINGS] ?? []
         );
     }
 }

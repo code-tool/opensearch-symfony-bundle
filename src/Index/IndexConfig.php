@@ -6,6 +6,8 @@ namespace CodeTool\OpenSearch\Index;
 
 class IndexConfig
 {
+    public const string FIELD_TYPE = 'type';
+    public const string FIELD_PATTERN = 'pattern';
     public const string FIELD_SETTINGS = 'settings';
     public const string FIELD_MAPPINGS = 'mappings';
     public const string TYPE_STATIC = 'static';
@@ -51,6 +53,11 @@ class IndexConfig
             default:
                 throw new \InvalidArgumentException(sprintf('Unknown type: %s', $this->type));
         }
+    }
+
+    public function getPattern(): ?string
+    {
+        return $this->pattern;
     }
 
     public function getAlias(): string

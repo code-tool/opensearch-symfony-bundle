@@ -90,15 +90,15 @@ class IndexActionCommand extends Command
         $io->title('Configured OpenSearch Indexes');
 
         $rows = [];
-        foreach ($indexes as $index => $config) {
+        foreach ($indexes as $config) {
             $rows[] = [
-                $index,
-                $config['type'],
-                $config['pattern'] ?? 'N/A'
+                $config->getAlias(),
+                $config->getType(),
+                $config->getPattern()
             ];
         }
 
-        $io->table(['Index', 'Type', 'Pattern'], $rows);
+        $io->table(['Alias', 'Type', 'Pattern'], $rows);
 
         return Command::SUCCESS;
     }

@@ -63,7 +63,10 @@ class IndexManager
         return $this->responseToBool($this->client->indices()->create($request));
     }
 
-    public function getIndexes(): array
+    /**
+     * @return list<IndexConfig>
+     */
+    public function getIndexes(): iterable
     {
         return $this->factory->getAll();
     }
