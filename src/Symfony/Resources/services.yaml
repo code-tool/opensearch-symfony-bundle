@@ -7,10 +7,10 @@ services:
     class: CodeTool\OpenSearch\Index\IndexConfigFactory
     arguments:
       - '%opensearch.config.indexes%'
-  OpenSearchBundle\Index\IndexManager:
+  CodeTool\OpenSearch\Index\IndexManager:
     arguments:
       - '@CodeTool\OpenSearch\Index\IndexConfigFactory'
       - '@OpenSearch\Client'
-  OpenSearchBundle\Command\IndexCreateCommand:
+  CodeTool\OpenSearch\Command\IndexActionCommand:
     arguments:
       $indexManager: '@OpenSearchBundle\Service\IndexManager'

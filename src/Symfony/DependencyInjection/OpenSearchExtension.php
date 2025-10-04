@@ -19,7 +19,7 @@ class OpenSearchExtension extends Extension
         $container->setParameter('opensearch.config', $config);
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__ . '/../Resources/config')
+            new FileLocator(__DIR__ . '/../Resources')
         );
         $loader->load('services.yaml');
 
