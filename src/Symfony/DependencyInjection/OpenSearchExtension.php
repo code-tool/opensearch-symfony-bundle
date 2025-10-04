@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CodeTool\OpenSearch\DependencyInjection;
+namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
 use CodeTool\OpenSearch\Index\IndexConfigFactory;
 use Symfony\Component\Config\FileLocator;

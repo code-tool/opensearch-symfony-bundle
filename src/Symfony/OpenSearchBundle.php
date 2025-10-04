@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Symfony;
 
-use CodeTool\OpenSearch\DependencyInjection\OpenSearchExtension;
+use CodeTool\OpenSearch\Symfony\DependencyInjection\OpenSearchExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class OpenSearchBundle extends Bundle

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CodeTool\OpenSearch\DependencyInjection;
+namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
