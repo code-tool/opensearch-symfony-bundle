@@ -111,11 +111,10 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')
                                 ->arrayPrototype()
-                                    ->ignoreExtraKeys(false)
                                     ->children()
-                                        ->scalarNode('type')->end()
-                                        ->scalarPrototype()->end()
+                                        ->scalarNode('type')->isRequired()->end()
                                     ->end()
+                                    ->ignoreExtraKeys(false)
                                 ->end()
                             ->end()
                             ->arrayNode('analyzers')
@@ -130,12 +129,12 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
-                            ->validate()
-                            ->ifTrue(function ($v) {
-                                return $v['type'] === 'template' && empty($v['pattern']);
-                            })
-                            ->thenInvalid('Pattern is required when type is "template"')
-                            ->end()
+                        ->end()
+                        ->validate()
+                        ->ifTrue(function ($v) {
+                            return $v['type'] === 'template' && empty($v['pattern']);
+                        })
+                        ->thenInvalid('Pattern is required when type is "template"')
                         ->end()
                     ->end()
                 ->end()
