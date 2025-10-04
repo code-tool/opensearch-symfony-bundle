@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getPropertiesNode() : NodeDefinition
+    public function getPropertiesNode() : ArrayNodeDefinition
     {
         $root = new NodeBuilder();
 
@@ -70,11 +70,6 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('enabled')->defaultTrue()->end()
                         ->booleanNode('index')->defaultTrue()->end()
                         ->booleanNode('dynamic')->defaultTrue()->end()
-                        ->arrayNode('properties')
-                            ->arrayPrototype()
-                                ->append($this->getPropertiesNode())
-                            ->end()
-                        ->end()
                     ->end()
                 ->end()
                 ->validate()
@@ -82,8 +77,7 @@ class Configuration implements ConfigurationInterface
                         return $v['type'] === 'object' && empty($v['properties']);
                     })
                     ->thenInvalid('Properties is required when type is "object"')
-                ->end()
-            ->end();
+                ->end();
     }
 
     public function getConfigTreeBuilder(): TreeBuilder
@@ -109,16 +103,11 @@ class Configuration implements ConfigurationInterface
                                 ->variablePrototype()->end()
                             ->end()
                             ->arrayNode('mappings')
-                            ->arrayPrototype()
                                 ->children()
                                     ->booleanNode('dynamic')
                                         ->defaultTrue()
                                     ->end()
-                                    ->arrayNode('properties')
-                                        ->arrayPrototype()
-                                            ->append($this->getPropertiesNode())
-                                        ->end()
-                                    ->end()
+                                    ->append($this->getPropertiesNode())->end()
                                 ->end()
                             ->end()
                             ->arrayNode('filters')
