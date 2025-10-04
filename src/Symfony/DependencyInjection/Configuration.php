@@ -114,6 +114,7 @@ class Configuration implements ConfigurationInterface
                                     ->ignoreExtraKeys(false)
                                     ->children()
                                         ->scalarNode('type')->end()
+                                        ->scalarPrototype()->end()
                                     ->end()
                                 ->end()
                             ->end()
@@ -128,6 +129,12 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                     ->end()
                                 ->end()
+                            ->end()
+                            ->validate()
+                            ->ifTrue(function ($v) {
+                                return $v['type'] === 'template' && empty($v['pattern']);
+                            })
+                            ->thenInvalid('Pattern is required when type is "template"')
                             ->end()
                         ->end()
                     ->end()
