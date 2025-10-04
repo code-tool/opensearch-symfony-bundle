@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
+use CodeTool\OpenSearch\Index\IndexConfig;
 use CodeTool\OpenSearch\Index\IndexConfigFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -24,6 +26,14 @@ class OpenSearchExtension extends Extension
         $loader->load('services.yaml');
 
         $container->findDefinition(IndexConfigFactory::class)->replaceArgument(0, $config['indexes']);
+        foreach ($config['indexes'] as $name => $config) {
+            $container->setDefinition(
+                'opensearch.index.' . $name,
+                new Definition(IndexConfig::class)
+                    ->setFactory([IndexConfigFactory::class, 'create'])
+                    ->setArguments([$config])
+            );
+        }
     }
 
     public function getAlias(): string
