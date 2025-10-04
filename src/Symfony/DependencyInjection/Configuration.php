@@ -11,11 +11,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getPropertiesNode() : ArrayNodeDefinition
+    public function getPropertiesNode(int $depth = 0) : ArrayNodeDefinition
     {
-        $root = new NodeBuilder();
-
-        return $root
+        $builder =  new NodeBuilder()
             ->arrayNode('properties')
                 ->useAttributeAsKey('name')
                 ->arrayPrototype()
@@ -69,14 +67,19 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('analyzer')->end()
                         ->booleanNode('enabled')->defaultTrue()->end()
                         ->booleanNode('index')->defaultTrue()->end()
-                        ->booleanNode('dynamic')->defaultTrue()->end()
+                        ->booleanNode('dynamic')->defaultTrue()->end();
+        if ($depth < 8) {
+            $builder->append($this->getPropertiesNode($depth + 1));
+        }
+
+        return $builder
                     ->end()
-                ->end()
-                ->validate()
-                    ->ifTrue(function ($v) {
-                        return $v['type'] === 'object' && empty($v['properties']);
-                    })
-                    ->thenInvalid('Properties is required when type is "object"')
+                    ->validate()
+                        ->ifTrue(function ($v) {
+                            return $v['type'] === 'object' && $v['dynamic'] === false && empty($v['properties']);
+                        })
+                        ->thenInvalid('Properties is required when type is "object"')
+                    ->end()
                 ->end();
     }
 
@@ -105,7 +108,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('mappings')
                                 ->children()
                                     ->booleanNode('dynamic')->defaultTrue()->end()
-                                    ->append($this->getPropertiesNode())->end()
+                                    ->append($this->getPropertiesNode())
                                 ->end()
                             ->end()
                             ->arrayNode('filters')
