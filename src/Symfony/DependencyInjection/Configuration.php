@@ -65,6 +65,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                         ->scalarNode('format')->end()
                         ->scalarNode('analyzer')->end()
+                        ->scalarNode('search_analyzer')->end()
                         ->booleanNode('enabled')->defaultTrue()->end()
                         ->booleanNode('index')->defaultTrue()->end()
                         ->booleanNode('dynamic')->defaultTrue()->end();
@@ -103,7 +104,154 @@ class Configuration implements ConfigurationInterface
                             ->end()
                             ->arrayNode('settings')
                                 ->ignoreExtraKeys(false)
-                                ->variablePrototype()->end()
+                                ->children()
+                                    ->arrayNode('analysis')
+                                        ->children()
+                                            ->arrayNode('filters')
+                                                ->useAttributeAsKey('name')
+                                                ->arrayPrototype()
+                                                    ->children()
+                                                        ->enumNode('type')
+                                                            ->values([
+                                                                'apostrophe',
+                                                                'asciifolding',
+                                                                'cjk_bigram',
+                                                                'cjk_width',
+                                                                'classic',
+                                                                'common_grams',
+                                                                'conditional',
+                                                                'decimal_digit',
+                                                                'delimited_payload',
+                                                                'delimited_term_freq',
+                                                                'dictionary_decompounder',
+                                                                'edge_ngram',
+                                                                'elision',
+                                                                'fingerprint',
+                                                                'flatten_graph',
+                                                                'hunspell',
+                                                                'hyphenation_decompounder',
+                                                                'keep_types',
+                                                                'keep_words',
+                                                                'keyword_marker',
+                                                                'keyword_repeat',
+                                                                'kstem',
+                                                                'kuromoji_completion',
+                                                                'length',
+                                                                'limit',
+                                                                'lowercase',
+                                                                'min_hash',
+                                                                'multiplexer',
+                                                                'ngram',
+                                                                'arabic_normalization',
+                                                                'german_normalization',
+                                                                'hindi_normalization',
+                                                                'indic_normalization',
+                                                                'sorani_normalization',
+                                                                'persian_normalization',
+                                                                'scandinavian_normalization',
+                                                                'scandinavian_folding',
+                                                                'serbian_normalization',
+                                                                'pattern_capture',
+                                                                'pattern_replace',
+                                                                'phonetic',
+                                                                'porter_stem',
+                                                                'predicate_token_filter',
+                                                                'remove_duplicates',
+                                                                'reverse',
+                                                                'shingle',
+                                                                'snowball',
+                                                                'stemmer',
+                                                                'stemmer_override',
+                                                                'stop',
+                                                                'synonym',
+                                                                'synonym_graph',
+                                                                'trim',
+                                                                'truncate',
+                                                                'unique',
+                                                                'uppercase',
+                                                                'word_delimiter',
+                                                                'word_delimiter_graph',
+                                                            ])
+                                                        ->isRequired()
+                                                        ->end()
+                                                    ->end()
+                                                    ->ignoreExtraKeys(false)
+                                                ->end()
+                                            ->end()
+                                            ->arrayNode('analyzers')
+                                                ->useAttributeAsKey('name')
+                                                ->arrayPrototype()
+                                                    ->children()
+                                                        ->enumNode('type')
+                                                            ->values([
+                                                                'standard',
+                                                                'simple',
+                                                                'whitespace',
+                                                                'stop',
+                                                                'keyword',
+                                                                'pattern',
+                                                                'arabic',
+                                                                'armenian',
+                                                                'basque',
+                                                                'bengali',
+                                                                'brazilian',
+                                                                'bulgarian',
+                                                                'catalan',
+                                                                'czech',
+                                                                'danish',
+                                                                'dutch',
+                                                                'english',
+                                                                'estonian',
+                                                                'finnish',
+                                                                'french',
+                                                                'galician',
+                                                                'german',
+                                                                'greek',
+                                                                'hindi',
+                                                                'hungarian',
+                                                                'indonesian',
+                                                                'irish',
+                                                                'italian',
+                                                                'latvian',
+                                                                'lithuanian',
+                                                                'norwegian',
+                                                                'persian',
+                                                                'portuguese',
+                                                                'romanian',
+                                                                'russian',
+                                                                'sorani',
+                                                                'spanish',
+                                                                'swedish',
+                                                                'thai',
+                                                                'turkish',
+                                                                'fingerprint',
+                                                                'bert-uncased',
+                                                                'mbert-uncased',
+                                                                'custom'
+                                                            ])
+                                                            ->isRequired()
+                                                        ->end()
+                                                        ->arrayNode('char_filter')
+                                                            ->scalarPrototype()->end()
+                                                        ->end()
+                                                        ->scalarNode('tokenizer')->end()
+                                                        ->arrayNode('filter')
+                                                            ->scalarPrototype()->end()
+                                                        ->end()
+                                                        ->scalarNode('position_increment_gap')->end()
+                                                    ->end()
+                                                    ->ignoreExtraKeys(false)
+                                                    ->validate()
+                                                    ->ifTrue(function ($v) {
+                                                        return $v['type'] === 'custom' && empty($v['tokenizer']);
+                                                    })
+                                                    ->thenInvalid('Tokenizer is required when type is "custom"')
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
                             ->end()
                             ->arrayNode('mappings')
                                 ->children()
@@ -111,27 +259,7 @@ class Configuration implements ConfigurationInterface
                                     ->append($this->getPropertiesNode())
                                 ->end()
                             ->end()
-                            ->arrayNode('filters')
-                                ->useAttributeAsKey('name')
-                                ->arrayPrototype()
-                                    ->children()
-                                        ->scalarNode('type')->isRequired()->end()
-                                    ->end()
-                                    ->ignoreExtraKeys(false)
-                                ->end()
-                            ->end()
-                            ->arrayNode('analyzers')
-                                ->useAttributeAsKey('name')
-                                ->arrayPrototype()
-                                    ->children()
-                                        ->scalarNode('type')->end()
-                                        ->scalarNode('tokenizer')->end()
-                                        ->arrayNode('filter')
-                                            ->scalarPrototype()->end()
-                                        ->end()
-                                    ->end()
-                                ->end()
-                            ->end()
+
                         ->end()
                         ->validate()
                         ->ifTrue(function ($v) {
