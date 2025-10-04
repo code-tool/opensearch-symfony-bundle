@@ -13,4 +13,4 @@ services:
       - '@OpenSearch\Client'
   CodeTool\OpenSearch\Command\IndexActionCommand:
     arguments:
-      $indexManager: '@OpenSearchBundle\Service\IndexManager'
+      $indexManager: '@CodeTool\OpenSearch\Index\IndexManager'
