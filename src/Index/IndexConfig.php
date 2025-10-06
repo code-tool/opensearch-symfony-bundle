@@ -50,9 +50,9 @@ class IndexConfig
                 $date = new \DateTimeImmutable();
 
                 return \str_replace(
-                    $this->pattern,
                     ['%Y', '%m', '%d'],
-                    [$date->format('Y'), $date->format('m'), $date->format('d')]
+                    [$date->format('Y'), $date->format('m'), $date->format('d')],
+                    $this->pattern
                 );
             default:
                 throw new \InvalidArgumentException(sprintf('Unknown type: %s', $this->type));
