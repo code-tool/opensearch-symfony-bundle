@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'opensearch:index:list',
-    description: 'List OpenSearch indexes',
+    name: 'opensearch:create',
+    description: 'Create OpenSearch indexes',
 )]
-class IndexListCommand extends Command
+class CreateCommand extends Command
 {
     private Manager $indexManager;
 
@@ -28,27 +28,25 @@ class IndexListCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('index', InputArgument::REQUIRED, 'Index from configuration');
+        $this->addArgument('index', InputArgument::OPTIONAL, 'Index from configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $indexes = $this->indexManager->getIndexes();
-        $io->title('Configured OpenSearch Indexes');
+        if ('' === ($name = $input->getArgument('index'))) {
+            if (!$io->confirm("Are you sure you want to create ALL indexes'?", false)) {
+                $io->info('Creation cancelled');
 
-        $rows = [];
-        foreach ($indexes as $config) {
-            $rows[] = [
-                $config->getAlias(),
-                $config->getType(),
-                $config->getPattern()
-            ];
+                return Command::SUCCESS;
+            }
+            foreach ($this->indexManager->getIndexes() as $index) {
+                $index->create();
+            }
+        } else {
+            $this->indexManager->getIndex($name)->create();
         }
 
-        $io->table(['Alias', 'Type', 'Pattern'], $rows);
-
         return Command::SUCCESS;
-
     }
 }

@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'opensearch:index:delete',
+    name: 'opensearch:delete',
     description: 'Delete OpenSearch indexes',
 )]
-class IndexDeleteCommand extends Command
+class DeleteCommand extends Command
 {
     private Manager $indexManager;
 

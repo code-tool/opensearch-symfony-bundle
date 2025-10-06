@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'opensearch:index:populate',
+    name: 'opensearch:populate',
     description: 'Populate OpenSearch indexes',
 )]
-class IndexPopulateCommand extends Command
+class PopulateCommand extends Command
 {
     private Manager $indexManager;
 

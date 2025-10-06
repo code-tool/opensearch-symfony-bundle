@@ -8,15 +8,15 @@ services:
   CodeTool\OpenSearch\Field\FieldFactoryInterface: '@CodeTool\OpenSearch\Field\FieldFactoryRegistry'
   CodeTool\OpenSearch\Index\Manager:
     class: CodeTool\OpenSearch\Index\Manager
-  CodeTool\OpenSearch\Command\IndexCreateCommand:
+  CodeTool\OpenSearch\Command\CreateCommand:
     arguments:
       $indexManager: '@CodeTool\OpenSearch\Index\Manager'
-  CodeTool\OpenSearch\Command\IndexDeleteCommand:
+  CodeTool\OpenSearch\Command\DeleteCommand:
     arguments:
       $indexManager: '@CodeTool\OpenSearch\Index\Manager'
-  CodeTool\OpenSearch\Command\IndexListCommand:
+  CodeTool\OpenSearch\Command\ListCommand:
     arguments:
       $indexManager: '@CodeTool\OpenSearch\Index\Manager'
-  CodeTool\OpenSearch\Command\IndexPopulateCommand:
+  CodeTool\OpenSearch\Command\PopulateCommand:
     arguments:
       $indexManager: '@CodeTool\OpenSearch\Index\Manager'
