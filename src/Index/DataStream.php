@@ -49,7 +49,7 @@ class DataStream
                             self::FIELD_MAPPINGS => [
                                 self::FIELD_DYNAMIC    => $this->dynamic,
                                 self::FIELD_PROPERTIES => \array_map(
-                                    static fn ($name): array => $this->factory
+                                    fn ($name): array => $this->factory
                                         ->create($name, $this->properties[$name])
                                         ->getDefinition(),
                                     \array_keys($this->properties),

@@ -3,6 +3,16 @@ services:
     autowire: true
     autoconfigure: true
     public: false
+  CodeTool\OpenSearch\Field\BuiltinFieldFactory:
+    class: CodeTool\OpenSearch\Field\BuiltinFieldFactory
+    tags:
+      - { name: opensearch.field.factory, type: !php/const BooleanField::FIELD_TYPE_BOOLEAN }
+      - { name: opensearch.field.factory, type: !php/const DateField::FIELD_TYPE_DATE}
+      - { name: opensearch.field.factory, type: !php/const FloatField::FIELD_TYPE_FLOAT }
+      - { name: opensearch.field.factory, type: !php/const IntegerField::FIELD_TYPE_INTEGER }
+      - { name: opensearch.field.factory, type: !php/const KeywordField::FIELD_TYPE_KEYWORD }
+      - { name: opensearch.field.factory, type: !php/const ObjectField::FIELD_TYPE_OBJECT }
+      - { name: opensearch.field.factory, type: !php/const TextField::FIELD_TYPE_TEXT }
   CodeTool\OpenSearch\Field\FieldFactoryRegistry:
     class: CodeTool\OpenSearch\Field\FieldFactoryRegistry
   CodeTool\OpenSearch\Field\FieldFactoryInterface: '@CodeTool\OpenSearch\Field\FieldFactoryRegistry'
