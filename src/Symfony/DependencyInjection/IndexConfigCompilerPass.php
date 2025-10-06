@@ -16,7 +16,7 @@ class IndexConfigCompilerPass implements CompilerPassInterface
         $manager = $container->getDefinition(IndexManager::class);
         foreach ($container->findTaggedServiceIds('opensearch.index.config') as $id => $tags) {
             foreach ($tags as $tag) {
-                $manager->addMethodCall('addConfig', [$tag['name'], $container->getDefinition($id)]);
+                $manager->addMethodCall('addIndex', [$tag['name'], $container->getDefinition($id)]);
             }
         }
     }
