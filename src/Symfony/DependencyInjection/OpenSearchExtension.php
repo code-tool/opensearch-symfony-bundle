@@ -29,7 +29,7 @@ class OpenSearchExtension extends Extension
         );
         $loader->load('services.yaml');
 
-        foreach ($config['data_stream'] as $name => $data) {
+        foreach ($config['data_streams'] as $name => $data) {
             $this->processDataStreams($name, $data, $container);
         }
         foreach ($config['index_templates'] as $name => $data) {

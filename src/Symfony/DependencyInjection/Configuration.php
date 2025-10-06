@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
+use CodeTool\OpenSearch\Index\Index;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -11,56 +12,167 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    public function getPropertiesNode(int $depth = 0) : ArrayNodeDefinition
+    public const array FIELD_TYPES
+        = [
+            'keyword',
+            'text',
+            'match_only_text',
+            'token_count',
+            'wildcard',
+            'binary',
+            'boolean',
+            'byte',
+            'double',
+            'float',
+            'half_float',
+            'integer',
+            'long',
+            'short',
+            'unsigned_long',
+            'scaled_float',
+            'date',
+            'date_nanos',
+            'ip',
+            'knn_vector',
+            'integer_range',
+            'long_range',
+            'double_range',
+            'float_range',
+            'ip_range',
+            'date_range',
+            'object',
+            'nested',
+            'flat_object',
+            'join',
+            'completion',
+            'search_as_you_type',
+            'geo_point',
+            'geo_shape',
+            'xy_point',
+            'xy_shape',
+            'rank_feature',
+            'rank_features'
+        ];
+
+    public const array FILTER_TYPES
+        = [
+            'apostrophe',
+            'asciifolding',
+            'cjk_bigram',
+            'cjk_width',
+            'classic',
+            'common_grams',
+            'conditional',
+            'decimal_digit',
+            'delimited_payload',
+            'delimited_term_freq',
+            'dictionary_decompounder',
+            'edge_ngram',
+            'elision',
+            'fingerprint',
+            'flatten_graph',
+            'hunspell',
+            'hyphenation_decompounder',
+            'keep_types',
+            'keep_words',
+            'keyword_marker',
+            'keyword_repeat',
+            'kstem',
+            'kuromoji_completion',
+            'length',
+            'limit',
+            'lowercase',
+            'min_hash',
+            'multiplexer',
+            'ngram',
+            'arabic_normalization',
+            'german_normalization',
+            'hindi_normalization',
+            'indic_normalization',
+            'sorani_normalization',
+            'persian_normalization',
+            'scandinavian_normalization',
+            'scandinavian_folding',
+            'serbian_normalization',
+            'pattern_capture',
+            'pattern_replace',
+            'phonetic',
+            'porter_stem',
+            'predicate_token_filter',
+            'remove_duplicates',
+            'reverse',
+            'shingle',
+            'snowball',
+            'stemmer',
+            'stemmer_override',
+            'stop',
+            'synonym',
+            'synonym_graph',
+            'trim',
+            'truncate',
+            'unique',
+            'uppercase',
+            'word_delimiter',
+            'word_delimiter_graph'
+
+        ];
+
+    public const array ANALYZER_TYPES = [
+        'standard',
+        'simple',
+        'whitespace',
+        'stop',
+        'keyword',
+        'pattern',
+        'arabic',
+        'armenian',
+        'basque',
+        'bengali',
+        'brazilian',
+        'bulgarian',
+        'catalan',
+        'czech',
+        'danish',
+        'dutch',
+        'english',
+        'estonian',
+        'finnish',
+        'french',
+        'galician',
+        'german',
+        'greek',
+        'hindi',
+        'hungarian',
+        'indonesian',
+        'irish',
+        'italian',
+        'latvian',
+        'lithuanian',
+        'norwegian',
+        'persian',
+        'portuguese',
+        'romanian',
+        'russian',
+        'sorani',
+        'spanish',
+        'swedish',
+        'thai',
+        'turkish',
+        'fingerprint',
+        'bert-uncased',
+        'mbert-uncased',
+        'custom'
+    ];
+
+    private function getPropertiesNode(int $depth = 0) : ArrayNodeDefinition
     {
         $builder =  new NodeBuilder()
-            ->arrayNode('properties')
+            ->arrayNode(Index::FIELD_PROPERTIES)
                 ->useAttributeAsKey('name')
                 ->arrayPrototype()
                     ->children()
                         ->enumNode('type')
-                            ->values(
-                                [
-                'keyword',
-                'text',
-                'match_only_text',
-                'token_count',
-                'wildcard',
-                'binary',
-                'boolean',
-                'byte',
-                'double',
-                'float',
-                'half_float',
-                'integer',
-                'long',
-                'short',
-                'unsigned_long',
-                'scaled_float',
-                'date',
-                'date_nanos',
-                'ip',
-                'knn_vector',
-                'integer_range',
-                'long_range',
-                'double_range',
-                'float_range',
-                'ip_range',
-                'date_range',
-                'object',
-                'nested',
-                'flat_object',
-                'join',
-                'completion',
-                'search_as_you_type',
-                'geo_point',
-                'geo_shape',
-                'xy_point',
-                'xy_shape',
-                'rank_feature',
-                'rank_features'
-            ]
-                            )
+                            ->values(self::FIELD_TYPES)
                             ->isRequired()
                         ->end()
                         ->scalarNode('format')->end()
@@ -84,181 +196,71 @@ class Configuration implements ConfigurationInterface
                 ->end();
     }
 
-    public function getConfigTreeBuilder(): TreeBuilder
+    private function getSettingsNode() : ArrayNodeDefinition
     {
-        $treeBuilder = new TreeBuilder('opensearch');
-        $rootNode = $treeBuilder->getRootNode();
-
-        $rootNode
-            ->children()
-                ->arrayNode('indexes')
-                    ->useAttributeAsKey('name')
-                    ->arrayPrototype()
+        return new NodeBuilder()
+            ->arrayNode(Index::FIELD_SETTINGS)
+                ->ignoreExtraKeys(false)
+                ->children()
+                    ->arrayNode('analysis')
                         ->children()
-                            ->enumNode('type')
-                                ->values(['template', 'static', 'data_stream'])
-                                ->isRequired()
-                            ->end()
-                            ->scalarNode('pattern')
-                                ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
-                            ->end()
-                            ->scalarNode('timestamp_field')
-                                ->defaultValue('@timestamp')
-                                ->info('Name of the template field for the data stream index')
-                            ->end()
-                            ->scalarNode('generator')->defaultNull()->end()
-                            ->arrayNode('settings')
-                                ->ignoreExtraKeys(false)
-                                ->children()
-                                    ->arrayNode('analysis')
-                                        ->children()
-                                            ->arrayNode('filters')
-                                                ->useAttributeAsKey('name')
-                                                ->arrayPrototype()
-                                                    ->children()
-                                                        ->enumNode('type')
-                                                            ->values([
-                                                                'apostrophe',
-                                                                'asciifolding',
-                                                                'cjk_bigram',
-                                                                'cjk_width',
-                                                                'classic',
-                                                                'common_grams',
-                                                                'conditional',
-                                                                'decimal_digit',
-                                                                'delimited_payload',
-                                                                'delimited_term_freq',
-                                                                'dictionary_decompounder',
-                                                                'edge_ngram',
-                                                                'elision',
-                                                                'fingerprint',
-                                                                'flatten_graph',
-                                                                'hunspell',
-                                                                'hyphenation_decompounder',
-                                                                'keep_types',
-                                                                'keep_words',
-                                                                'keyword_marker',
-                                                                'keyword_repeat',
-                                                                'kstem',
-                                                                'kuromoji_completion',
-                                                                'length',
-                                                                'limit',
-                                                                'lowercase',
-                                                                'min_hash',
-                                                                'multiplexer',
-                                                                'ngram',
-                                                                'arabic_normalization',
-                                                                'german_normalization',
-                                                                'hindi_normalization',
-                                                                'indic_normalization',
-                                                                'sorani_normalization',
-                                                                'persian_normalization',
-                                                                'scandinavian_normalization',
-                                                                'scandinavian_folding',
-                                                                'serbian_normalization',
-                                                                'pattern_capture',
-                                                                'pattern_replace',
-                                                                'phonetic',
-                                                                'porter_stem',
-                                                                'predicate_token_filter',
-                                                                'remove_duplicates',
-                                                                'reverse',
-                                                                'shingle',
-                                                                'snowball',
-                                                                'stemmer',
-                                                                'stemmer_override',
-                                                                'stop',
-                                                                'synonym',
-                                                                'synonym_graph',
-                                                                'trim',
-                                                                'truncate',
-                                                                'unique',
-                                                                'uppercase',
-                                                                'word_delimiter',
-                                                                'word_delimiter_graph',
-                                                            ])
-                                                        ->isRequired()
-                                                        ->end()
-                                                    ->end()
-                                                    ->ignoreExtraKeys(false)
-                                                ->end()
-                                            ->end()
-                                            ->arrayNode('analyzers')
-                                                ->useAttributeAsKey('name')
-                                                ->arrayPrototype()
-                                                    ->children()
-                                                        ->enumNode('type')
-                                                            ->values([
-                                                                'standard',
-                                                                'simple',
-                                                                'whitespace',
-                                                                'stop',
-                                                                'keyword',
-                                                                'pattern',
-                                                                'arabic',
-                                                                'armenian',
-                                                                'basque',
-                                                                'bengali',
-                                                                'brazilian',
-                                                                'bulgarian',
-                                                                'catalan',
-                                                                'czech',
-                                                                'danish',
-                                                                'dutch',
-                                                                'english',
-                                                                'estonian',
-                                                                'finnish',
-                                                                'french',
-                                                                'galician',
-                                                                'german',
-                                                                'greek',
-                                                                'hindi',
-                                                                'hungarian',
-                                                                'indonesian',
-                                                                'irish',
-                                                                'italian',
-                                                                'latvian',
-                                                                'lithuanian',
-                                                                'norwegian',
-                                                                'persian',
-                                                                'portuguese',
-                                                                'romanian',
-                                                                'russian',
-                                                                'sorani',
-                                                                'spanish',
-                                                                'swedish',
-                                                                'thai',
-                                                                'turkish',
-                                                                'fingerprint',
-                                                                'bert-uncased',
-                                                                'mbert-uncased',
-                                                                'custom'
-                                                            ])
-                                                            ->isRequired()
-                                                        ->end()
-                                                        ->arrayNode('char_filter')
-                                                            ->scalarPrototype()->end()
-                                                        ->end()
-                                                        ->scalarNode('tokenizer')->end()
-                                                        ->arrayNode('filter')
-                                                            ->scalarPrototype()->end()
-                                                        ->end()
-                                                        ->scalarNode('position_increment_gap')->end()
-                                                    ->end()
-                                                    ->ignoreExtraKeys(false)
-                                                    ->validate()
-                                                    ->ifTrue(function ($v) {
-                                                        return $v['type'] === 'custom' && empty($v['tokenizer']);
-                                                    })
-                                                    ->thenInvalid('Tokenizer is required when type is "custom"')
-                                                    ->end()
-                                                ->end()
-                                            ->end()
+                            ->arrayNode('filters')
+                                ->useAttributeAsKey('name')
+                                ->arrayPrototype()
+                                    ->children()
+                                        ->enumNode('type')
+                                            ->values(self::FILTER_TYPES)
+                                            ->isRequired()
                                         ->end()
                                     ->end()
                                 ->end()
                             ->end()
-                            ->arrayNode('mappings')
+                            ->arrayNode('analyzers')
+                                ->useAttributeAsKey('name')
+                                ->arrayPrototype()
+                                    ->children()
+                                        ->enumNode('type')
+                                            ->values(self::ANALYZER_TYPES)
+                                            ->isRequired()
+                                        ->end()
+                                        ->arrayNode('char_filter')
+                                            ->scalarPrototype()->end()
+                                        ->end()
+                                        ->scalarNode('tokenizer')->end()
+                                        ->arrayNode('filter')
+                                            ->scalarPrototype()->end()
+                                        ->end()
+                                        ->scalarNode('position_increment_gap')->end()
+                                    ->end()
+                                ->validate()
+                                    ->ifTrue(function ($v) {
+                                        return $v['type'] === 'custom' && empty($v['tokenizer']);
+                                    })
+                                    ->thenInvalid('Tokenizer is required when type is "custom"')
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end();
+    }
+
+    public function getIndexesNode(): ArrayNodeDefinition
+    {
+        return new NodeBuilder()
+            ->arrayNode('indexes')
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->children()
+//                            ->scalarNode('pattern')
+//                                ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
+//                            ->end()
+//                            ->scalarNode('timestamp_field')
+//                                ->defaultValue('@timestamp')
+//                                ->info('Name of the template field for the data stream index')
+//                            ->end()
+//                            ->scalarNode('generator')->defaultNull()->end()
+                            ->append($this->getSettingsNode())
+                            ->arrayNode(Index::FIELD_MAPPINGS)
                                 ->children()
                                     ->booleanNode('dynamic')->defaultTrue()->end()
                                     ->append($this->getPropertiesNode())
@@ -266,26 +268,18 @@ class Configuration implements ConfigurationInterface
                             ->end()
 
                         ->end()
-                        ->validate()
-                        ->ifTrue(function ($v) {
-                            return $v['type'] === 'template' && empty($v['pattern']);
-                        })
-                        ->thenInvalid('Pattern is required when type is "template"')
-                        ->end()
-                        ->validate()
-                        ->ifTrue(function ($v) {
-                            return $v['type'] === 'data_stream' && empty($v['pattern']);
-                        })
-                        ->thenInvalid('Pattern is required when type is "data_stream"')
-                        ->end()
-                        ->validate()
-                        ->ifTrue(function ($v) {
-                            return $v['type'] === 'data_stream' && empty($v['timestamp_field']);
-                        })
-                        ->thenInvalid('Timestamp field is required when type is "data_stream"')
-                        ->end()
                     ->end()
-                ->end()
+                ->end();
+    }
+
+    public function getConfigTreeBuilder(): TreeBuilder
+    {
+        $treeBuilder = new TreeBuilder('opensearch');
+        $rootNode = $treeBuilder->getRootNode();
+
+        $rootNode
+            ->children()
+                ->append($this->getIndexesNode())
             ->end();
 
         return $treeBuilder;
