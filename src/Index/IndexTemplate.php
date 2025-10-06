@@ -45,10 +45,10 @@ class IndexTemplate
                             self::FIELD_MAPPINGS => [
                                 self::FIELD_DYNAMIC    => $this->dynamic,
                                 self::FIELD_PROPERTIES => \array_map(
-                                    static fn ($name, $definition): array => $this->factory
-                                        ->create($name, $definition)
+                                    static fn ($name): array => $this->factory
+                                        ->create($name, $this->properties[$name])
                                         ->getDefinition(),
-                                    $this->properties,
+                                    \array_keys($this->properties),
                                 )
                             ]
                         ]
