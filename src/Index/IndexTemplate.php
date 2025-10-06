@@ -15,7 +15,7 @@ class IndexTemplate
     public const string FIELD_SETTINGS = 'settings';
     public const string FIELD_MAPPINGS = 'mappings';
     public const string FIELD_PROPERTIES = 'properties';
-    public const string FIELD_INDEX_PATTERNS = 'pattern';
+    public const string FIELD_INDEX_PATTERNS = 'index_patterns';
 
     public function __construct(
         private readonly Client $client,

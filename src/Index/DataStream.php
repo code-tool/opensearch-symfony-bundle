@@ -16,7 +16,7 @@ class DataStream
     public const string FIELD_SETTINGS = 'settings';
     public const string FIELD_MAPPINGS = 'mappings';
     public const string FIELD_PROPERTIES = 'properties';
-    public const string FIELD_INDEX_PATTERNS = 'pattern';
+    public const string FIELD_INDEX_PATTERNS = 'index_patterns';
     public const string FIELD_TIMESTAMP_FIELD = 'timestamp_field';
 
     public function __construct(
