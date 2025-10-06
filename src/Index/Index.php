@@ -11,6 +11,7 @@ class Index
     public const string FIELD_INDEX = 'index';
     public const string FIELD_UNDERSCORE_INDEX = '_index';
     public const string FIELD_BODY = 'body';
+    public const string FIELD_NAME = 'name';
     public const string FIELD_DYNAMIC = 'dynamic';
     public const string FIELD_SETTINGS = 'settings';
     public const string FIELD_MAPPINGS = 'mappings';

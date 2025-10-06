@@ -21,7 +21,7 @@ class IndexTemplate
         private readonly Client $client,
         private readonly FieldFactoryInterface $factory,
         private readonly string $name,
-        private readonly string $pattern,
+        private readonly array $patterns,
         private readonly array $settings,
         private readonly mixed $dynamic,
         private readonly array $properties,
@@ -39,7 +39,7 @@ class IndexTemplate
                 [
                     self::FIELD_NAME => $this->name,
                     self::FIELD_BODY => [
-                        self::FIELD_INDEX_PATTERNS => [$this->pattern],
+                        self::FIELD_INDEX_PATTERNS => $this->patterns,
                         self::FIELD_TEMPLATE       => [
                             self::FIELD_SETTINGS => $this->settings,
                             self::FIELD_MAPPINGS => [

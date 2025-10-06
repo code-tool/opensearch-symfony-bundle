@@ -6,6 +6,7 @@ namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
 use CodeTool\OpenSearch\Index\DataStream;
 use CodeTool\OpenSearch\Index\Index;
+use CodeTool\OpenSearch\Index\IndexTemplate;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -251,17 +252,9 @@ class Configuration implements ConfigurationInterface
     {
         return new NodeBuilder()
             ->arrayNode('indexes')
-                ->useAttributeAsKey('name')
+                ->useAttributeAsKey(Index::FIELD_NAME)
                 ->arrayPrototype()
                     ->children()
-//                            ->scalarNode('pattern')
-//                                ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
-//                            ->end()
-//                            ->scalarNode('timestamp_field')
-//                                ->defaultValue('@timestamp')
-//                                ->info('Name of the template field for the data stream index')
-//                            ->end()
-//                            ->scalarNode('generator')->defaultNull()->end()
                         ->append($this->getSettingsNode())
                         ->arrayNode(Index::FIELD_MAPPINGS)
                             ->children()
@@ -277,7 +270,7 @@ class Configuration implements ConfigurationInterface
     {
         return new NodeBuilder()
             ->arrayNode('data_streams')
-                ->useAttributeAsKey('name')
+                ->useAttributeAsKey(DataStream::FIELD_NAME)
                 ->arrayPrototype()
                     ->children()
                         ->arrayNode(DataStream::FIELD_INDEX_PATTERNS)
@@ -299,6 +292,28 @@ class Configuration implements ConfigurationInterface
                 ->end();
     }
 
+    public function getIndexTemplatesNode(): ArrayNodeDefinition
+    {
+        return new NodeBuilder()
+            ->arrayNode('index_templates')
+                ->useAttributeAsKey(IndexTemplate::FIELD_NAME)
+                ->arrayPrototype()
+                    ->children()
+                        ->arrayNode(IndexTemplate::FIELD_INDEX_PATTERNS)
+                            ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->append($this->getSettingsNode())
+                        ->arrayNode(IndexTemplate::FIELD_MAPPINGS)
+                            ->children()
+                                ->booleanNode(IndexTemplate::FIELD_DYNAMIC)->defaultTrue()->end()
+                                ->append($this->getPropertiesNode())
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end();
+    }
+
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('opensearch');
@@ -306,6 +321,8 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->append($this->getDataStreamsNode())
+                ->append($this->getIndexTemplatesNode())
                 ->append($this->getIndexesNode())
             ->end();
 
