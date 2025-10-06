@@ -250,9 +250,9 @@ class Configuration implements ConfigurationInterface
     {
         return new NodeBuilder()
             ->arrayNode('indexes')
-                    ->useAttributeAsKey('name')
-                    ->arrayPrototype()
-                        ->children()
+                ->useAttributeAsKey('name')
+                ->arrayPrototype()
+                    ->children()
 //                            ->scalarNode('pattern')
 //                                ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
 //                            ->end()
@@ -261,17 +261,16 @@ class Configuration implements ConfigurationInterface
 //                                ->info('Name of the template field for the data stream index')
 //                            ->end()
 //                            ->scalarNode('generator')->defaultNull()->end()
-                            ->append($this->getSettingsNode())
-                            ->arrayNode(Index::FIELD_MAPPINGS)
-                                ->children()
-                                    ->booleanNode('dynamic')->defaultTrue()->end()
-                                    ->append($this->getPropertiesNode())
-                                ->end()
+                        ->append($this->getSettingsNode())
+                        ->arrayNode(Index::FIELD_MAPPINGS)
+                            ->children()
+                                ->booleanNode('dynamic')->defaultTrue()->end()
+                                ->append($this->getPropertiesNode())
                             ->end()
-
                         ->end()
                     ->end()
-                ->end();
+                ->end()
+            ->end();
     }
 
     public function getConfigTreeBuilder(): TreeBuilder
