@@ -16,14 +16,18 @@ class IndexManager
      */
     private array $indexes = [];
 
-    private IndexConfigFactory $factory;
-
     private Client $client;
 
-    public function __construct(IndexConfigFactory $factory, Client $client)
+    public function __construct(Client $client)
     {
-        $this->factory = $factory;
         $this->client = $client;
+    }
+
+    public function addIndex(string $name, IndexConfig $config): IndexManager
+    {
+        $this->indexes[$name] = $config;
+
+        return $this;
     }
 
     public function delete(string $name): bool
@@ -43,15 +47,6 @@ class IndexManager
         return $this->client->indices()->exists([self::INDEX_REQUEST_NAME => $name]);
     }
 
-    public function getConfig(string $name): IndexConfig
-    {
-        if (false === \array_key_exists($name, $this->indexes)) {
-            $this->indexes[$name] = $this->factory->create($name);
-        }
-
-        return $this->indexes[$name];
-    }
-
     public function create(string $name): bool
     {
         $config = $this->getConfig($name);
@@ -63,11 +58,30 @@ class IndexManager
         return $this->responseToBool($this->client->indices()->create($request));
     }
 
+    public function getConfig(string $name): IndexConfig
+    {
+        if (false === \array_key_exists($name, $this->indexes)) {
+            throw new \InvalidArgumentException(\sprintf('Index "%s" not found', $name));
+        }
+
+        return $this->indexes[$name];
+    }
+
+    public function addDocument(string $name, array $document): bool
+    {
+        return true;
+    }
+
+    public function addDocuments(string $name, array $documents): bool
+    {
+        return true;
+    }
+
     /**
      * @return list<IndexConfig>
      */
     public function getIndexes(): iterable
     {
-        return $this->factory->getAll();
+        yield from $this->indexes;
     }
 }

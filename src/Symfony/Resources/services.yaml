@@ -3,14 +3,18 @@ services:
     autowire: true
     autoconfigure: true
     public: false
-  CodeTool\OpenSearch\Index\IndexConfigFactory:
-    class: CodeTool\OpenSearch\Index\IndexConfigFactory
-    arguments:
-      - '%opensearch.config.indexes%'
   CodeTool\OpenSearch\Index\IndexManager:
     arguments:
-      - '@CodeTool\OpenSearch\Index\IndexConfigFactory'
       - '@OpenSearch\Client'
-  CodeTool\OpenSearch\Command\IndexActionCommand:
+  CodeTool\OpenSearch\Command\IndexCreateCommand:
+    arguments:
+      $indexManager: '@CodeTool\OpenSearch\Index\IndexManager'
+  CodeTool\OpenSearch\Command\IndexDeleteCommand:
+    arguments:
+      $indexManager: '@CodeTool\OpenSearch\Index\IndexManager'
+  CodeTool\OpenSearch\Command\IndexListCommand:
+    arguments:
+      $indexManager: '@CodeTool\OpenSearch\Index\IndexManager'
+  CodeTool\OpenSearch\Command\IndexPopulateCommand:
     arguments:
       $indexManager: '@CodeTool\OpenSearch\Index\IndexManager'

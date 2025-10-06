@@ -15,9 +15,11 @@ class IndexConfig
 
     private string $alias;
 
-    private ?string $pattern;
-
     private string $type;
+
+    private ?DocumentGeneratorInterface $generator;
+
+    private ?string $pattern;
 
     private array $settings;
 
@@ -26,12 +28,14 @@ class IndexConfig
     public function __construct(
         string $alias,
         string $type,
+        ?DocumentGeneratorInterface $generator = null,
         ?string $pattern = null,
         array $settings = [],
         array $mappings = []
     ) {
         $this->alias = $alias;
         $this->type = $type;
+        $this->generator = $generator;
         $this->pattern = $pattern;
         $this->settings = $settings;
         $this->mappings = $mappings;
@@ -78,6 +82,11 @@ class IndexConfig
     public function getMappings(): array
     {
         return $this->mappings;
+    }
+
+    public function getGenerator(): ?DocumentGeneratorInterface
+    {
+        return $this->generator;
     }
 
     public function toArray(): array

@@ -10,6 +10,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class OpenSearchExtension extends Extension
@@ -30,8 +31,17 @@ class OpenSearchExtension extends Extension
             $container->setDefinition(
                 'opensearch.index.' . $name,
                 new Definition(IndexConfig::class)
-                    ->setFactory([IndexConfigFactory::class, 'create'])
-                    ->setArguments([$config])
+                    ->setArguments(
+                        [
+                            $name,
+                            $config['type'],
+                            $config['generator'] ? new Reference($config['generator']) : null,
+                            $config['pattern'] ?? null,
+                            $config['settings'] ?? [],
+                            $config['mappings'] ?? [],
+                        ]
+                    )
+                    ->addTag('opensearch.index.config', ['name' => $name])
             );
         }
     }

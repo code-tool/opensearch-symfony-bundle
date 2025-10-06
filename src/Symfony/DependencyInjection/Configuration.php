@@ -102,6 +102,7 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('pattern')
                                 ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
                             ->end()
+                            ->scalarNode('generator')->defaultNull()->end()
                             ->arrayNode('settings')
                                 ->ignoreExtraKeys(false)
                                 ->children()
