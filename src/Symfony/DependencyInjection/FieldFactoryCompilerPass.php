@@ -11,7 +11,7 @@ class FieldFactoryCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        if (false === $container->hasAlias(Manager::class)) {
+        if (false === $container->hasDefinition(Manager::class)) {
             return;
         }
         $manager = $container->getDefinition(Manager::class);

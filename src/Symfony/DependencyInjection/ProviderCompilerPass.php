@@ -11,7 +11,7 @@ class ProviderCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        if (false === $container->has(Manager::class)) {
+        if (false === $container->hasDefinition(Manager::class)) {
             return;
         }
         $manager = $container->getDefinition(Manager::class);
