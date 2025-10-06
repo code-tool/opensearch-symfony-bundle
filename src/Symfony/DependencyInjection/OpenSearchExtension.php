@@ -10,6 +10,7 @@ use CodeTool\OpenSearch\Index\Index;
 use CodeTool\OpenSearch\Index\IndexTemplate;
 use OpenSearch\Client;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -48,7 +49,7 @@ class OpenSearchExtension extends Extension
                 ->setArguments(
                     [
                         new Reference(Client::class),
-                        new Reference(FieldFactoryInterface::class),
+                        new Alias(FieldFactoryInterface::class),
                         $name,
                         $config['pattern'],
                         $config['timestamp_field'],
