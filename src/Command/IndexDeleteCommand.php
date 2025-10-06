@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CodeTool\OpenSearch\Command;
 
 use CodeTool\OpenSearch\Index\IndexConfig;
-use CodeTool\OpenSearch\Index\IndexManager;
+use CodeTool\OpenSearch\Index\Manager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,9 +19,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class IndexDeleteCommand extends Command
 {
-    private IndexManager $indexManager;
+    private Manager $indexManager;
 
-    public function __construct(IndexManager $indexManager)
+    public function __construct(Manager $indexManager)
     {
         parent::__construct();
         $this->indexManager = $indexManager;
@@ -50,7 +50,7 @@ class IndexDeleteCommand extends Command
 
                 return Command::SUCCESS;
             }
-            $this->deleteIndex($this->indexManager->getConfig($index), $io);
+            $this->deleteIndex($this->indexManager->getIndex($index), $io);
         }
 
         return Command::SUCCESS;

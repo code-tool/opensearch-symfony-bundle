@@ -1,8 +1,8 @@
 <?php
 
-namespace CodeTool\OpenSearch\Index;
+namespace CodeTool\OpenSearch\Document;
 
-interface DocumentGeneratorInterface
+interface ProviderInterface
 {
     /**
      * @return iterable<array>

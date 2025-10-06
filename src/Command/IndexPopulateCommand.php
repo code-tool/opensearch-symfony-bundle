@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Command;
 
-use CodeTool\OpenSearch\Index\IndexConfig;
-use CodeTool\OpenSearch\Index\IndexManager;
+use CodeTool\OpenSearch\Index\Manager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,9 +18,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class IndexPopulateCommand extends Command
 {
-    private IndexManager $indexManager;
+    private Manager $indexManager;
 
-    public function __construct(IndexManager $indexManager)
+    public function __construct(Manager $indexManager)
     {
         $this->indexManager = $indexManager;
         parent::__construct();
@@ -41,28 +40,13 @@ class IndexPopulateCommand extends Command
 
                 return Command::SUCCESS;
             }
-            foreach ($this->indexManager->getIndexes() as $config) {
-                $this->reIndex($config, $io);
+            foreach ($this->indexManager->getIndexes() as $index) {
+                $index->reIndex();
             }
         } else {
-            $this->reIndex($this->indexManager->getConfig($index), $io);
+            $this->indexManager->reindex($index);
         }
 
         return Command::SUCCESS;
-    }
-
-    private function reIndex(IndexConfig $config, SymfonyStyle $io): void
-    {
-        if (null === ($generator = $config->getGenerator())) {
-            $io->warning("Index '{$config->getAlias()}' has no generator");
-
-            return;
-        }
-
-        foreach ($generator->getDocuments() as $document) {
-            if (false === $this->indexManager->addDocument($config->getAlias(), $document)) {
-                $io->warning("Index '{$config->getAlias()}' already exists");
-            }
-        }
     }
 }

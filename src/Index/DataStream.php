@@ -1,0 +1,75 @@
+<?php
+
+namespace CodeTool\OpenSearch\Index;
+
+use CodeTool\OpenSearch\Field\FieldFactoryInterface;
+use CodeTool\OpenSearch\Response\Response;
+use OpenSearch\Client;
+
+class DataStream
+{
+    public const string FIELD_BODY = 'body';
+    public const string FIELD_NAME = 'name';
+    public const string FIELD_DATA_STREAM = 'data_stream';
+    public const string FIELD_TEMPLATE = 'template';
+    public const string FIELD_DYNAMIC = 'dynamic';
+    public const string FIELD_SETTINGS = 'settings';
+    public const string FIELD_MAPPINGS = 'mappings';
+    public const string FIELD_PROPERTIES = 'properties';
+    public const string FIELD_INDEX_PATTERNS = 'pattern';
+    public const string FIELD_TIMESTAMP_FIELD = 'timestamp_field';
+
+    public function __construct(
+        private readonly Client $client,
+        private readonly FieldFactoryInterface $factory,
+        private readonly string $name,
+        private readonly string $pattern,
+        private readonly string $timestampField,
+        private readonly array $settings,
+        private readonly mixed $dynamic,
+        private readonly array $properties,
+    ) {}
+
+    public function create(): Response
+    {
+        return new Response(
+            $this->client->indices()->putIndexTemplate(
+                [
+                    self::FIELD_NAME => $this->name,
+                    self::FIELD_BODY => [
+                        self::FIELD_INDEX_PATTERNS => [$this->pattern],
+                        self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => $this->timestampField],
+                        self::FIELD_TEMPLATE       => [
+                            self::FIELD_SETTINGS => $this->settings,
+                            self::FIELD_MAPPINGS => [
+                                self::FIELD_DYNAMIC    => $this->dynamic,
+                                self::FIELD_PROPERTIES => \array_map(
+                                    static fn ($name, $definition): array => $this->factory
+                                        ->create($name, $definition)
+                                        ->getDefinition(),
+                                    $this->properties,
+                                )
+                            ]
+                        ]
+                    ]
+
+                ]
+            )
+        );
+    }
+
+    public function delete(): bool
+    {
+        return new Response(
+                   $this->client->indices()->deleteDataStream([self::FIELD_NAME => $this->name])
+               )->isAcknowledged()
+               && new Response(
+                   $this->client->indices()->deleteIndexTemplate([self::FIELD_NAME => $this->name])
+               )->isAcknowledged();
+    }
+
+    public function exists(): bool
+    {
+        return $this->client->indices()->existsIndexTemplate([self::FIELD_NAME => $this->name]);
+    }
+}
