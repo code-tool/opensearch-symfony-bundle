@@ -207,6 +207,7 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')
                                 ->arrayPrototype()
+                                    ->ignoreExtraKeys(false)
                                     ->children()
                                         ->enumNode('type')
                                             ->values(self::FILTER_TYPES)
@@ -241,7 +242,8 @@ class Configuration implements ConfigurationInterface
                             ->end()
                         ->end()
                     ->end()
-                ->end();
+                ->end()
+            ->end();
     }
 
     public function getIndexesNode(): ArrayNodeDefinition
