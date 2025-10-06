@@ -43,10 +43,7 @@ class BuiltinFieldFactory implements FieldFactoryInterface
                 $config[AbstractField::FIELD_ENABLED] ?? true,
                 $config[AbstractField::FIELD_INDEX] ?? true,
                 $config[ObjectField::FIELD_DYNAMIC] ?? true,
-                array_map(
-                    fn ($name): FieldInterface => $this->create($name, $config[ObjectField::FIELD_PROPERTIES][$name]),
-                    \array_keys($config[ObjectField::FIELD_PROPERTIES] ?? [])
-                )
+                $config[ObjectField::FIELD_PROPERTIES] ?? []
             ),
             TextField::FIELD_TYPE_TEXT       => new TextField(
                 $name,
