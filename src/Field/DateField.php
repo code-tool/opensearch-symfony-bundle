@@ -9,11 +9,10 @@ class DateField extends AbstractField
 
     public function __construct(
         string $name,
-        bool $enabled,
         bool $index,
         private readonly string $format
     ) {
-        parent::__construct($name, $enabled, $index);
+        parent::__construct($name, $index);
     }
 
     public function getFormat(): ?string

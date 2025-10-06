@@ -11,12 +11,11 @@ class ObjectField extends AbstractField
     public function __construct(
         private readonly FieldFactoryInterface $factory,
         string $name,
-        bool $enabled,
         bool $index,
         private readonly bool $dynamic,
         private readonly array $properties
     ) {
-        parent::__construct($name, $enabled, $index);
+        parent::__construct($name, $index);
     }
 
     public function isDynamic(): bool

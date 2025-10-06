@@ -180,7 +180,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('format')->end()
                         ->scalarNode('analyzer')->end()
                         ->scalarNode('search_analyzer')->end()
-                        ->booleanNode('enabled')->defaultTrue()->end()
                         ->booleanNode('index')->defaultTrue()->end()
                         ->booleanNode('dynamic')->defaultTrue()->end();
         if ($depth < 8) {
