@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Command;
 
-use CodeTool\OpenSearch\Index\IndexConfig;
 use CodeTool\OpenSearch\Index\Manager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -35,40 +34,24 @@ class IndexDeleteCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        if ('' === ($index = $input->getArgument('index'))) {
+        if ('' === ($name = $input->getArgument('index'))) {
             if (!$io->confirm("Are you sure you want to delete ALL indexes'?", false)) {
                 $io->info('Deletion cancelled');
 
                 return Command::SUCCESS;
             }
-            foreach ($this->indexManager->getIndexes() as $config) {
-                $this->deleteIndex($config, $io);
+            foreach ($this->indexManager->getIndexes() as $index) {
+                $index->delete();
             }
         } else {
-            if (!$io->confirm("Are you sure you want to delete index '{$index}'?", false)) {
+            if (!$io->confirm("Are you sure you want to delete index '{$name}'?", false)) {
                 $io->info('Deletion cancelled');
 
                 return Command::SUCCESS;
             }
-            $this->deleteIndex($this->indexManager->getIndex($index), $io);
+            $this->indexManager->getIndex($name)->delete();
         }
 
         return Command::SUCCESS;
-    }
-
-    private function deleteIndex(IndexConfig $config, SymfonyStyle $io): void
-    {
-        if (!$this->indexManager->exists($config->getAlias())) {
-            $io->warning("Index '{$config->getAlias()}' does not exist");
-
-            return;
-        }
-
-        if (false === $this->indexManager->delete($config->getAlias())) {
-            $io->error("Failed to delete index '{$config->getAlias()}'");
-
-            return;
-        }
-        $io->success("Index '{$config->getAlias()}' deleted successfully");
     }
 }

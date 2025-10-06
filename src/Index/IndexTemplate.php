@@ -27,6 +27,11 @@ class IndexTemplate
         private readonly array $properties,
     ) {}
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function create(): Response
     {
         return new Response(

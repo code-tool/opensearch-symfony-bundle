@@ -48,6 +48,11 @@ class Index
         return new Response($this->client->indices()->create($request));
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
     public function delete(): Response
     {
         return new Response($this->client->indices()->delete([self::FIELD_INDEX => $this->name]));
