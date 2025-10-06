@@ -8,9 +8,10 @@ use OpenSearch\Client;
 
 class IndexManager
 {
-    const string INDEX_RESULT_ACKNOWLEDGED = 'acknowledged';
-    const string INDEX_REQUEST_NAME = 'index';
-    const string INDEX_REQUEST_BODY = 'body';
+    public const string INDEX_FIELD_ACKNOWLEDGED = 'acknowledged';
+    public const string INDEX_FIELD_INDEX = 'index';
+    public const string INDEX_FIELD_BODY = 'body';
+    public const string INDEX_FIELD_ACTION_INDEX = '_index';
     /**
      * @var array<string,IndexConfig>
      */
@@ -32,27 +33,27 @@ class IndexManager
 
     public function delete(string $name): bool
     {
-        return $this->responseToBool($this->client->indices()->delete([self::INDEX_REQUEST_NAME => $name]));
+        return $this->responseToBool($this->client->indices()->delete([self::INDEX_FIELD_INDEX => $name]));
     }
 
     protected function responseToBool(array $response): bool
     {
-        return \array_key_exists(self::INDEX_RESULT_ACKNOWLEDGED, $response)
-               && \is_bool($response[self::INDEX_RESULT_ACKNOWLEDGED])
-               && $response[self::INDEX_RESULT_ACKNOWLEDGED];
+        return \array_key_exists(self::INDEX_FIELD_ACKNOWLEDGED, $response)
+               && \is_bool($response[self::INDEX_FIELD_ACKNOWLEDGED])
+               && $response[self::INDEX_FIELD_ACKNOWLEDGED];
     }
 
     public function exists(string $name): bool
     {
-        return $this->client->indices()->exists([self::INDEX_REQUEST_NAME => $name]);
+        return $this->client->indices()->exists([self::INDEX_FIELD_INDEX => $name]);
     }
 
     public function create(string $name): bool
     {
         $config = $this->getConfig($name);
         $request = [
-            self::INDEX_REQUEST_NAME => $config->getName(),
-            self::INDEX_REQUEST_BODY => $config->toArray(),
+            self::INDEX_FIELD_INDEX => $config->getName(),
+            self::INDEX_FIELD_BODY  => $config->toArray(),
         ];
 
         return $this->responseToBool($this->client->indices()->create($request));
@@ -74,6 +75,19 @@ class IndexManager
 
     public function addDocuments(string $name, array $documents): bool
     {
+        $bulk = [];
+        $name = $this->getConfig($name)->getName();
+        foreach ($documents as $document) {
+            $bulk[] = [
+                self::INDEX_FIELD_INDEX => [
+                    self::INDEX_FIELD_ACTION_INDEX => $this->getConfig($name)->getName()
+                ]
+            ];
+            $bulk[] = $document;
+
+        }
+        $this->client->bulk([self::INDEX_FIELD_INDEX => $name, self::INDEX_FIELD_BODY => $bulk]);
+
         return true;
     }
 
