@@ -49,7 +49,7 @@ class OpenSearchExtension extends Extension
                 ->setArguments(
                     [
                         new Reference(Client::class),
-                        new Alias(FieldFactoryInterface::class),
+                        new Reference(FieldFactoryInterface::class),
                         $name,
                         $config['pattern'],
                         $config['timestamp_field'],
@@ -70,7 +70,7 @@ class OpenSearchExtension extends Extension
                 ->setArguments(
                     [
                         new Reference(Client::class),
-                        new Alias(FieldFactoryInterface::class),
+                        new Reference(FieldFactoryInterface::class),
                         $name,
                         $config['pattern'],
                         $config['settings'] ?? [],
@@ -90,7 +90,7 @@ class OpenSearchExtension extends Extension
                 ->setArguments(
                     [
                         new Reference(Client::class),
-                        new Alias(FieldFactoryInterface::class),
+                        new Reference(FieldFactoryInterface::class),
                         $name,
                         $config['settings'] ?? [],
                         $config['mappings']['dynamic'] ?? false,
