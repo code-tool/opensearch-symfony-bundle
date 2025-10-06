@@ -30,11 +30,16 @@ class ObjectField extends AbstractField
 
     public function getDefinition(): array
     {
+        $properties = [];
+        foreach ($this->properties as $name => $property) {
+            $properties[$name] = $this->factory->create($name, $property)->getDefinition();
+        }
+
         return \array_merge(
             parent::getDefinition(),
             [
                 self::FIELD_DYNAMIC    => $this->dynamic,
-                self::FIELD_PROPERTIES => \array_map(static fn ($v): array => $v->getDefinition(), $this->properties)
+                self::FIELD_PROPERTIES => $properties
             ]
         );
     }
