@@ -13,35 +13,36 @@ class BuiltinFieldFactory implements FieldFactoryInterface
         return match ((string)$config['type']) {
             BooleanField::FIELD_TYPE_BOOLEAN => new BooleanField(
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $config[BooleanField::FIELD_INDEX] ?? true,
             ),
             DateField::FIELD_TYPE_DATE       => new DateField(
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $config[DateField::FIELD_INDEX] ?? true,
                 $config[DateField::FIELD_FORMAT] ?? null
             ),
             FloatField::FIELD_TYPE_FLOAT     => new FloatField(
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $config[FloatField::FIELD_INDEX] ?? true,
             ),
             IntegerField::FIELD_TYPE_INTEGER => new IntegerField(
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $config[IntegerField::FIELD_INDEX] ?? true,
             ),
             KeywordField::FIELD_TYPE_KEYWORD => new KeywordField(
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $config[KeywordField::FIELD_INDEX] ?? true,
             ),
             ObjectField::FIELD_TYPE_OBJECT   => new ObjectField(
-                $this,
+
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $this,
+                $config[ObjectField::FIELD_ENABLED] ?? true,
                 $config[ObjectField::FIELD_DYNAMIC] ?? true,
                 $config[ObjectField::FIELD_PROPERTIES] ?? []
             ),
             TextField::FIELD_TYPE_TEXT       => new TextField(
                 $name,
-                $config[AbstractField::FIELD_INDEX] ?? true,
+                $config[TextField::FIELD_INDEX] ?? true,
             ),
             default                          => throw new \InvalidArgumentException(
                 \sprintf('Unknown field type: %s', $config['type'])

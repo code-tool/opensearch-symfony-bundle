@@ -6,16 +6,17 @@ class ObjectField extends AbstractField
 {
     public const string FIELD_TYPE_OBJECT = 'object';
     public const string FIELD_DYNAMIC = 'dynamic';
+    public const string FIELD_ENABLED = 'enabled';
     public const string FIELD_PROPERTIES = 'properties';
 
     public function __construct(
-        private readonly FieldFactoryInterface $factory,
         string $name,
-        bool $index,
+        private readonly FieldFactoryInterface $factory,
+        private readonly bool $enabled,
         private readonly bool $dynamic,
         private readonly array $properties
     ) {
-        parent::__construct($name, $index);
+        parent::__construct($name);
     }
 
     public function isDynamic(): bool
@@ -38,6 +39,7 @@ class ObjectField extends AbstractField
         return \array_merge(
             parent::getDefinition(),
             [
+                self::FIELD_ENABLED    => $this->enabled,
                 self::FIELD_DYNAMIC    => $this->dynamic,
                 self::FIELD_PROPERTIES => $properties
             ]
