@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class OpenSearchExtension extends Extension
 {
@@ -51,11 +52,11 @@ class OpenSearchExtension extends Extension
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
                         $name,
-                        $config['pattern'],
-                        $config['timestamp_field'],
-                        $config['settings'] ?? [],
-                        $config['mappings']['dynamic'] ?? false,
-                        $config['mappings']['properties'] ?? [],
+                        $config[DataStream::FIELD_INDEX_PATTERNS],
+                        $config[DataStream::FIELD_TIMESTAMP_FIELD],
+                        $config[DataStream::FIELD_SETTINGS] ?? [],
+                        $config[DataStream::FIELD_MAPPINGS][DataStream::FIELD_DYNAMIC] ?? false,
+                        $config[DataStream::FIELD_MAPPINGS][DataStream::FIELD_PROPERTIES] ?? [],
                     ]
                 )
                 ->addTag('opensearch.data_stream', ['name' => $name])
@@ -72,10 +73,10 @@ class OpenSearchExtension extends Extension
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
                         $name,
-                        $config['pattern'],
-                        $config['settings'] ?? [],
-                        $config['mappings']['dynamic'] ?? false,
-                        $config['mappings']['properties'] ?? [],
+                        $config[IndexTemplate::FIELD_INDEX_PATTERNS],
+                        $config[IndexTemplate::FIELD_SETTINGS] ?? [],
+                        $config[IndexTemplate::FIELD_MAPPINGS][IndexTemplate::FIELD_DYNAMIC] ?? false,
+                        $config[IndexTemplate::FIELD_MAPPINGS][IndexTemplate::FIELD_PROPERTIES] ?? [],
                     ]
                 )
                 ->addTag('opensearch.index_template', ['name' => $name])
@@ -92,9 +93,9 @@ class OpenSearchExtension extends Extension
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
                         $name,
-                        $config['settings'] ?? [],
-                        $config['mappings']['dynamic'] ?? false,
-                        $config['mappings']['properties'] ?? [],
+                        $config[Index::FIELD_SETTINGS] ?? [],
+                        $config[Index::FIELD_MAPPINGS][Index::FIELD_DYNAMIC] ?? false,
+                        $config[Index::FIELD_MAPPINGS][Index::FIELD_PROPERTIES] ?? [],
                     ]
                 )
                 ->addTag('opensearch.index', ['name' => $name])
