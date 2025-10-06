@@ -6,6 +6,7 @@ use CodeTool\OpenSearch\Field\FieldFactoryInterface;
 use CodeTool\OpenSearch\Index\Manager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class IndexCompilerPass implements CompilerPassInterface
 {
@@ -17,7 +18,7 @@ class IndexCompilerPass implements CompilerPassInterface
         $manager = $container->getDefinition(Manager::class);
         foreach ($container->findTaggedServiceIds('opensearch.index') as $id => $tags) {
             foreach ($tags as $tag) {
-                $manager->addMethodCall('addIndex', [$tag['name'], $container->getDefinition($id)]);
+                $manager->addMethodCall('addIndex', [$tag['name'], new Reference($id)]);
             }
         }
     }
