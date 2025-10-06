@@ -96,11 +96,15 @@ class Configuration implements ConfigurationInterface
                     ->arrayPrototype()
                         ->children()
                             ->enumNode('type')
-                                ->values(['template', 'static'])
+                                ->values(['template', 'static', 'data_stream'])
                                 ->isRequired()
                             ->end()
                             ->scalarNode('pattern')
                                 ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
+                            ->end()
+                            ->scalarNode('timestamp_field')
+                                ->defaultValue('@timestamp')
+                                ->info('Name of the template field for the data stream index')
                             ->end()
                             ->scalarNode('generator')->defaultNull()->end()
                             ->arrayNode('settings')
@@ -267,6 +271,18 @@ class Configuration implements ConfigurationInterface
                             return $v['type'] === 'template' && empty($v['pattern']);
                         })
                         ->thenInvalid('Pattern is required when type is "template"')
+                        ->end()
+                        ->validate()
+                        ->ifTrue(function ($v) {
+                            return $v['type'] === 'data_stream' && empty($v['pattern']);
+                        })
+                        ->thenInvalid('Pattern is required when type is "data_stream"')
+                        ->end()
+                        ->validate()
+                        ->ifTrue(function ($v) {
+                            return $v['type'] === 'data_stream' && empty($v['timestamp_field']);
+                        })
+                        ->thenInvalid('Timestamp field is required when type is "data_stream"')
                         ->end()
                     ->end()
                 ->end()

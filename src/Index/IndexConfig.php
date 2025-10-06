@@ -12,6 +12,7 @@ class IndexConfig
     public const string FIELD_MAPPINGS = 'mappings';
     public const string TYPE_STATIC = 'static';
     public const string TYPE_TEMPLATE = 'template';
+    public const string TYPE_DATA_STREAM = 'data_stream';
 
     private string $alias;
 
@@ -41,22 +42,18 @@ class IndexConfig
         $this->mappings = $mappings;
     }
 
-    public function getName(): string
+    public function getName(\DateTimeInterface $date): string
     {
-        switch ($this->type) {
-            case self::TYPE_STATIC:
-                return $this->alias;
-            case self::TYPE_TEMPLATE:
-                $date = new \DateTimeImmutable();
-
-                return \str_replace(
-                    ['%Y', '%m', '%d'],
-                    [$date->format('Y'), $date->format('m'), $date->format('d')],
-                    $this->pattern
-                );
-            default:
-                throw new \InvalidArgumentException(sprintf('Unknown type: %s', $this->type));
-        }
+        return match ($this->type) {
+            self::TYPE_STATIC, self::TYPE_DATA_STREAM => $this->alias,
+            self::TYPE_TEMPLATE                       => \str_replace(
+                ['%Y', '%m', '%d'],
+                [$date->format('Y'), $date->format('m'), $date->format('d')],
+                $this->pattern
+            ),
+            default                                   =>
+            throw new \InvalidArgumentException(sprintf('Unknown type: %s', $this->type)),
+        };
     }
 
     public function getPattern(): ?string
