@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
+use CodeTool\OpenSearch\Index\DataStream;
 use CodeTool\OpenSearch\Index\Index;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
@@ -233,17 +234,17 @@ class Configuration implements ConfigurationInterface
                                         ->end()
                                         ->scalarNode('position_increment_gap')->end()
                                     ->end()
-                                ->validate()
-                                    ->ifTrue(function ($v) {
-                                        return $v['type'] === 'custom' && empty($v['tokenizer']);
-                                    })
-                                    ->thenInvalid('Tokenizer is required when type is "custom"')
+                                    ->validate()
+                                        ->ifTrue(function ($v) {
+                                            return $v['type'] === 'custom' && empty($v['tokenizer']);
+                                        })
+                                        ->thenInvalid('Tokenizer is required when type is "custom"')
+                                    ->end()
                                 ->end()
                             ->end()
                         ->end()
                     ->end()
-                ->end()
-            ->end();
+                ->end();
     }
 
     public function getIndexesNode(): ArrayNodeDefinition
@@ -264,13 +265,38 @@ class Configuration implements ConfigurationInterface
                         ->append($this->getSettingsNode())
                         ->arrayNode(Index::FIELD_MAPPINGS)
                             ->children()
-                                ->booleanNode('dynamic')->defaultTrue()->end()
+                                ->booleanNode(Index::FIELD_DYNAMIC)->defaultTrue()->end()
                                 ->append($this->getPropertiesNode())
                             ->end()
                         ->end()
                     ->end()
-                ->end()
-            ->end();
+                ->end();
+    }
+
+    public function getDataStreamsNode(): ArrayNodeDefinition
+    {
+        return new NodeBuilder()
+            ->arrayNode('data_streams')
+                ->useAttributeAsKey('name')
+                ->arrayPrototype()
+                    ->children()
+                        ->arrayNode(DataStream::FIELD_INDEX_PATTERNS)
+                            ->info('Date pattern for template indexes, e.g., logs_%Y-%m-%d')
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->scalarNode(DataStream::FIELD_TIMESTAMP_FIELD)
+                            ->defaultValue('@timestamp')
+                            ->info('Name of the template field for the data stream index')
+                        ->end()
+                        ->append($this->getSettingsNode())
+                        ->arrayNode(DataStream::FIELD_MAPPINGS)
+                            ->children()
+                                ->booleanNode(DataStream::FIELD_DYNAMIC)->defaultTrue()->end()
+                                ->append($this->getPropertiesNode())
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end();
     }
 
     public function getConfigTreeBuilder(): TreeBuilder
