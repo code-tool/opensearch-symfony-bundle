@@ -9,6 +9,7 @@ class ObjectField extends AbstractField
     public const string FIELD_PROPERTIES = 'properties';
 
     public function __construct(
+        private readonly FieldFactoryInterface $factory,
         string $name,
         bool $enabled,
         bool $index,

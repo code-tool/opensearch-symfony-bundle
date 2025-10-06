@@ -38,6 +38,7 @@ class BuiltinFieldFactory implements FieldFactoryInterface
                 $config[AbstractField::FIELD_INDEX] ?? true,
             ),
             ObjectField::FIELD_TYPE_OBJECT   => new ObjectField(
+                $this,
                 $name,
                 $config[AbstractField::FIELD_ENABLED] ?? true,
                 $config[AbstractField::FIELD_INDEX] ?? true,
