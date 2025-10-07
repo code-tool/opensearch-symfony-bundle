@@ -20,6 +20,7 @@ class DataStream extends AbstractStorage
     public const string FIELD_TIMESTAMP_FIELD = 'timestamp_field';
 
     public function __construct(
+        string $prefix,
         string $name,
         Client $client,
         private readonly FieldFactoryInterface $factory,
@@ -29,7 +30,7 @@ class DataStream extends AbstractStorage
         private readonly mixed $dynamic,
         private readonly array $properties,
     ) {
-        parent::__construct($name, $client);
+        parent::__construct($prefix, $name, $client);
     }
 
     /**
@@ -52,12 +53,15 @@ class DataStream extends AbstractStorage
                 [
                     self::FIELD_NAME => $this->getName(),
                     self::FIELD_BODY => [
-                        self::FIELD_INDEX_PATTERNS => $this->patterns,
+                        self::FIELD_INDEX_PATTERNS => \array_map(
+                            fn (string $p): string => $this->getPrefix() . $p,
+                            $this->patterns
+                        ),
                         self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => [self::FIELD_NAME => $this->timestampField]],
                         self::FIELD_TEMPLATE       => [
                             self::FIELD_SETTINGS => $this->settings,
                             self::FIELD_MAPPINGS => [
-                                self::FIELD_DYNAMIC    => $this->dynamic,
+                                self::FIELD_DYNAMIC => $this->dynamic,
                                 self::FIELD_PROPERTIES => \array_map(
                                     static fn ($property) => $property->getDefinition(),
                                     $this->getProperties()

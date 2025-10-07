@@ -9,6 +9,7 @@ use OpenSearch\Client;
 
 class IndexTemplate
 {
+    public const string FIELD_PREFIX = 'prefix';
     public const string FIELD_BODY = 'body';
     public const string FIELD_NAME = 'name';
     public const string FIELD_TEMPLATE = 'template';
@@ -19,6 +20,7 @@ class IndexTemplate
     public const string FIELD_INDEX_PATTERNS = 'index_patterns';
 
     public function __construct(
+        private readonly string $prefix,
         private readonly string $name,
         private readonly Client $client,
         private readonly FieldFactoryInterface $factory,
@@ -53,11 +55,14 @@ class IndexTemplate
                 [
                     self::FIELD_NAME => $this->name,
                     self::FIELD_BODY => [
-                        self::FIELD_INDEX_PATTERNS => $this->patterns,
+                        self::FIELD_INDEX_PATTERNS => \array_map(
+                            fn (string $p): string => $this->prefix . $p,
+                            $this->patterns
+                        ),
                         self::FIELD_TEMPLATE       => [
                             self::FIELD_SETTINGS => $this->settings,
                             self::FIELD_MAPPINGS => [
-                                self::FIELD_DYNAMIC    => $this->dynamic,
+                                self::FIELD_DYNAMIC => $this->dynamic,
                                 self::FIELD_PROPERTIES => \array_map(
                                     static fn ($property) => $property->getDefinition(),
                                     $this->getProperties()

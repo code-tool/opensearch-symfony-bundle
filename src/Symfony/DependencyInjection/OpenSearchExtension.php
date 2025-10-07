@@ -10,13 +10,11 @@ use CodeTool\OpenSearch\Index\Index;
 use CodeTool\OpenSearch\Index\IndexTemplate;
 use OpenSearch\Client;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 class OpenSearchExtension extends Extension
 {
@@ -49,6 +47,7 @@ class OpenSearchExtension extends Extension
             new Definition(DataStream::class)
                 ->setArguments(
                     [
+                        $config[IndexTemplate::FIELD_PREFIX] ?? '',
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
@@ -70,6 +69,7 @@ class OpenSearchExtension extends Extension
             new Definition(IndexTemplate::class)
                 ->setArguments(
                     [
+                        $config[IndexTemplate::FIELD_PREFIX] ?? '',
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
@@ -90,6 +90,7 @@ class OpenSearchExtension extends Extension
             new Definition(Index::class)
                 ->setArguments(
                     [
+                        $config[IndexTemplate::FIELD_PREFIX] ?? '',
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),

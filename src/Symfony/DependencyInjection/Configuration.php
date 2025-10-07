@@ -329,6 +329,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('prefix')->defaultValue('')->end()
                 ->append($this->getDataStreamsNode())
                 ->append($this->getIndexTemplatesNode())
                 ->append($this->getIndexesNode())

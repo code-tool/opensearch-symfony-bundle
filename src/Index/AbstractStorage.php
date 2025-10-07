@@ -7,6 +7,7 @@ use OpenSearch\Client;
 
 class AbstractStorage
 {
+    public const string FIELD_PREFIX = 'prefix';
     public const string FIELD_BODY = 'body';
     public const string FIELD_CREATE = 'create';
     public const string FIELD_INDEX = 'index';
@@ -15,13 +16,19 @@ class AbstractStorage
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
 
     public function __construct(
+        private readonly string $prefix,
         private readonly string $name,
         private readonly Client $client
     ) {}
 
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
     public function getName(): string
     {
-        return $this->name;
+        return $this->prefix . $this->name;
     }
 
     public function getClient(): Client
@@ -31,19 +38,19 @@ class AbstractStorage
 
     public function add(array $document): Response
     {
-        return new Response($this->client->index([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $document]));
+        return new Response($this->client->index([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $document]));
     }
 
     public function addBulk(array $documents): Response
     {
         $body = [];
         foreach ($documents as $document) {
-            $body[] = [self::FIELD_CREATE => [self::FIELD_UNDERSCORE_INDEX => $this->name]];
+            $body[] = [self::FIELD_CREATE => [self::FIELD_UNDERSCORE_INDEX => $this->getName()]];
             $body[] = $document;
         }
 
         return new Response(
-            $this->client->bulk([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $body])
+            $this->client->bulk([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $body])
         );
     }
 
