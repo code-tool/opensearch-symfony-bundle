@@ -7,9 +7,8 @@ use CodeTool\OpenSearch\Field\FieldInterface;
 use CodeTool\OpenSearch\Response\Response;
 use OpenSearch\Client;
 
-class DataStream
+class DataStream extends AbstractStorage
 {
-    public const string FIELD_BODY = 'body';
     public const string FIELD_NAME = 'name';
     public const string FIELD_DATA_STREAM = 'data_stream';
     public const string FIELD_TEMPLATE = 'template';
@@ -21,19 +20,16 @@ class DataStream
     public const string FIELD_TIMESTAMP_FIELD = 'timestamp_field';
 
     public function __construct(
-        private readonly Client $client,
+        string $name,
+        Client $client,
         private readonly FieldFactoryInterface $factory,
-        private readonly string $name,
         private readonly array $patterns,
         private readonly string $timestampField,
         private readonly array $settings,
         private readonly mixed $dynamic,
         private readonly array $properties,
-    ) {}
-
-    public function getName(): string
-    {
-        return $this->name;
+    ) {
+        parent::__construct($name, $client);
     }
 
     /**
@@ -52,9 +48,9 @@ class DataStream
     public function create(): bool
     {
         return new Response(
-                   $this->client->indices()->putIndexTemplate(
+                   $this->getClient()->indices()->putIndexTemplate(
                        [
-                           self::FIELD_NAME => $this->name,
+                           self::FIELD_NAME => $this->getName(),
                            self::FIELD_BODY => [
                                self::FIELD_INDEX_PATTERNS => $this->patterns,
                                self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => [self::FIELD_NAME => $this->timestampField]],
@@ -74,9 +70,9 @@ class DataStream
                    )
                )->isAcknowledged()
                && new Response(
-                   $this->client->indices()->createDataStream(
+                   $this->getClient()->indices()->createDataStream(
                        [
-                           self::FIELD_NAME => $this->name,
+                           self::FIELD_NAME => $this->getName(),
                            self::FIELD_BODY => []
 
                        ]
@@ -87,15 +83,15 @@ class DataStream
     public function delete(): bool
     {
         return new Response(
-                   $this->client->indices()->deleteDataStream([self::FIELD_NAME => $this->name])
+                   $this->getClient()->indices()->deleteDataStream([self::FIELD_NAME => $this->getName()])
                )->isAcknowledged()
                && new Response(
-                   $this->client->indices()->deleteIndexTemplate([self::FIELD_NAME => $this->name])
+                   $this->getClient()->indices()->deleteIndexTemplate([self::FIELD_NAME => $this->getName()])
                )->isAcknowledged();
     }
 
     public function exists(): bool
     {
-        return $this->client->indices()->existsIndexTemplate([self::FIELD_NAME => $this->name]);
+        return $this->getClient()->indices()->existsIndexTemplate([self::FIELD_NAME => $this->getName()]);
     }
 }

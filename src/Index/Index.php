@@ -7,27 +7,24 @@ use CodeTool\OpenSearch\Field\FieldInterface;
 use CodeTool\OpenSearch\Response\Response;
 use OpenSearch\Client;
 
-class Index
+class Index extends AbstractStorage
 {
-    public const string FIELD_INDEX = 'index';
-    public const string FIELD_UNDERSCORE_INDEX = '_index';
-    public const string FIELD_BODY = 'body';
     public const string FIELD_NAME = 'name';
     public const string FIELD_DYNAMIC = 'dynamic';
     public const string FIELD_SETTINGS = 'settings';
     public const string FIELD_MAPPINGS = 'mappings';
     public const string FIELD_PROPERTIES = 'properties';
-    public const string FIELD_DOC = 'doc';
-    public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
 
     public function __construct(
-        private readonly Client $client,
+        string $name,
+        Client $client,
         private readonly FieldFactoryInterface $factory,
-        private readonly string $name,
         private readonly array $settings,
         private readonly mixed $dynamic,
         private readonly array $properties,
-    ) {}
+    ) {
+        parent::__construct($name, $client);
+    }
 
     /**
      * @return array<string,FieldInterface>
@@ -45,9 +42,9 @@ class Index
     public function create(): Response
     {
         return new Response(
-            $this->client->indices()->create(
+            $this->getClient()->indices()->create(
                 [
-                    self::FIELD_INDEX => $this->name,
+                    self::FIELD_INDEX => $this->getName(),
                     self::FIELD_BODY  => [
                         self::FIELD_SETTINGS => $this->settings,
                         self::FIELD_MAPPINGS => [
@@ -63,53 +60,13 @@ class Index
         );
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
     public function delete(): Response
     {
-        return new Response($this->client->indices()->delete([self::FIELD_INDEX => $this->name]));
+        return new Response($this->getClient()->indices()->delete([self::FIELD_INDEX => $this->getName()]));
     }
 
     public function exists(): bool
     {
-        return $this->client->indices()->exists([self::FIELD_INDEX => $this->name]);
-    }
-
-    public function add(array $document): Response
-    {
-        return new Response($this->client->index([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $document]));
-    }
-
-    public function addBulk(array $documents): Response
-    {
-        $body = [];
-        foreach ($documents as $document) {
-            $body[] = [self::FIELD_INDEX => [self::FIELD_UNDERSCORE_INDEX => $this->name]];
-            $body[] = $document;
-        }
-
-        return new Response(
-            $this->client->bulk([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $body])
-        );
-    }
-
-    public function upsert(array $document): Response
-    {
-        return new Response(
-            $this->client->update(
-                [
-                    self::FIELD_INDEX => $this->name,
-                    self::FIELD_BODY  => [self::FIELD_DOC => $document, self::FIELD_DOC_AS_UPSERT => true]
-                ]
-            )
-        );
-    }
-
-    public function update(array $document): Response
-    {
-        return new Response($this->client->index([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $document]));
+        return $this->getClient()->indices()->exists([self::FIELD_INDEX => $this->getName()]);
     }
 }

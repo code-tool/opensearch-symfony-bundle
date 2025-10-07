@@ -49,9 +49,9 @@ class OpenSearchExtension extends Extension
             new Definition(DataStream::class)
                 ->setArguments(
                     [
+                        $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
-                        $name,
                         $config[DataStream::FIELD_INDEX_PATTERNS],
                         $config[DataStream::FIELD_TIMESTAMP_FIELD],
                         $config[DataStream::FIELD_SETTINGS] ?? [],
@@ -70,9 +70,9 @@ class OpenSearchExtension extends Extension
             new Definition(IndexTemplate::class)
                 ->setArguments(
                     [
+                        $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
-                        $name,
                         $config[IndexTemplate::FIELD_INDEX_PATTERNS],
                         $config[IndexTemplate::FIELD_SETTINGS] ?? [],
                         $config[IndexTemplate::FIELD_MAPPINGS][IndexTemplate::FIELD_DYNAMIC] ?? false,
@@ -90,9 +90,9 @@ class OpenSearchExtension extends Extension
             new Definition(Index::class)
                 ->setArguments(
                     [
+                        $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
-                        $name,
                         $config[Index::FIELD_SETTINGS] ?? [],
                         $config[Index::FIELD_MAPPINGS][Index::FIELD_DYNAMIC] ?? false,
                         $config[Index::FIELD_MAPPINGS][Index::FIELD_PROPERTIES] ?? [],

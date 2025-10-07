@@ -19,9 +19,9 @@ class IndexTemplate
     public const string FIELD_INDEX_PATTERNS = 'index_patterns';
 
     public function __construct(
+        private readonly string $name,
         private readonly Client $client,
         private readonly FieldFactoryInterface $factory,
-        private readonly string $name,
         private readonly array $patterns,
         private readonly array $settings,
         private readonly mixed $dynamic,
