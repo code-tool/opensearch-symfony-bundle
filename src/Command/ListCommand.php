@@ -41,13 +41,12 @@ class ListCommand extends Command
         foreach ($indexes as $index) {
             $rows[] = [
                 $index->getName(),
-                $index->getType(),
                 \json_encode($index->getProperties()),
                 $index->exists() ? 'Yes' : 'No',
             ];
         }
 
-        $io->table(['Name', 'Type', 'Mappings', 'Exists'], $rows);
+        $io->table(['Name', 'Mappings', 'Exists'], $rows);
 
         return Command::SUCCESS;
 
