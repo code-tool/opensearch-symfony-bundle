@@ -9,6 +9,8 @@ services:
       - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\BooleanField::FIELD_TYPE_BOOLEAN }
       - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\DateField::FIELD_TYPE_DATE}
       - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\FloatField::FIELD_TYPE_FLOAT }
+      - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\GeoPointField::FIELD_TYPE_GEO_POINT }
+      - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\GeoShapeField::FIELD_TYPE_GEO_SHAPE }
       - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\IntegerField::FIELD_TYPE_INTEGER }
       - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\KeywordField::FIELD_TYPE_KEYWORD }
       - { name: opensearch.field.factory, type: !php/const CodeTool\OpenSearch\Field\ObjectField::FIELD_TYPE_OBJECT }
