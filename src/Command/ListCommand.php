@@ -41,7 +41,7 @@ class ListCommand extends Command
         foreach ($indexes as $index) {
             $rows[] = [
                 $index->getName(),
-                \json_encode($index->getProperties()),
+                \json_encode(array_map(static fn ($p): array => $p->getDefinition(), $index->getProperties())),
                 $index->exists() ? 'Yes' : 'No',
             ];
         }
