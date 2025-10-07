@@ -35,31 +35,41 @@ class DataStream
         return $this->name;
     }
 
-    public function create(): Response
+    public function create(): bool
     {
         $properties = [];
         foreach ($this->properties as $name => $property) {
             $properties[$name] = $this->factory->create($name, $property)->getDefinition();
         }
-        return new Response(
-            $this->client->indices()->putIndexTemplate(
-                [
-                    self::FIELD_NAME => $this->name,
-                    self::FIELD_BODY => [
-                        self::FIELD_INDEX_PATTERNS => $this->patterns,
-                        self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => [self::FIELD_NAME => $this->timestampField]],
-                        self::FIELD_TEMPLATE       => [
-                            self::FIELD_SETTINGS => $this->settings,
-                            self::FIELD_MAPPINGS => [
-                                self::FIELD_DYNAMIC    => $this->dynamic,
-                                self::FIELD_PROPERTIES => $properties
-                            ]
-                        ]
-                    ]
 
-                ]
-            )
-        );
+        return new Response(
+                   $this->client->indices()->putIndexTemplate(
+                       [
+                           self::FIELD_NAME => $this->name,
+                           self::FIELD_BODY => [
+                               self::FIELD_INDEX_PATTERNS => $this->patterns,
+                               self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => [self::FIELD_NAME => $this->timestampField]],
+                               self::FIELD_TEMPLATE       => [
+                                   self::FIELD_SETTINGS => $this->settings,
+                                   self::FIELD_MAPPINGS => [
+                                       self::FIELD_DYNAMIC    => $this->dynamic,
+                                       self::FIELD_PROPERTIES => $properties
+                                   ]
+                               ]
+                           ]
+
+                       ]
+                   )
+               )->isAcknowledged()
+               && new Response(
+                   $this->client->indices()->createDataStream(
+                       [
+                           self::FIELD_NAME => $this->name,
+                           self::FIELD_BODY => []
+
+                       ]
+                   )
+               )->isAcknowledged();
     }
 
     public function delete(): bool
