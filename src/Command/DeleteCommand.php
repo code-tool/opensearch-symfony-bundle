@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Command;
 
+use CodeTool\OpenSearch\Index\DataStream;
+use CodeTool\OpenSearch\Index\Index;
+use CodeTool\OpenSearch\Index\IndexTemplate;
 use CodeTool\OpenSearch\Index\Manager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,6 +21,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class DeleteCommand extends Command
 {
+    public const array ALLOWED_TYPES
+        = [
+            Index::FIELD_INDEX,
+            DataStream::FIELD_DATA_STREAM,
+            IndexTemplate::FIELD_TEMPLATE
+        ];
+
     private Manager $indexManager;
 
     public function __construct(Manager $indexManager)
@@ -34,22 +44,28 @@ class DeleteCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        if ('' === ($name = $input->getArgument('index'))) {
-            if (!$io->confirm("Are you sure you want to delete ALL indexes'?", false)) {
-                $io->info('Deletion cancelled');
+        $type = $input->getOption('type');
+        if (false === \in_array($type, self::ALLOWED_TYPES, true)) {
+            throw new \InvalidArgumentException(
+                \sprintf('Invalid type "%s, must be one of [%s]"', $type, \implode(', ', self::ALLOWED_TYPES))
+            );
+        }
+        $name = $input->getArgument('name');
+        if (!$io->confirm(\sprintf('Are you sure you want to create %s "%s"?', $type, $name), false)) {
+            $io->info('Creation cancelled');
 
-                return Command::SUCCESS;
-            }
-            foreach ($this->indexManager->getIndexes() as $index) {
-                $index->delete();
-            }
-        } else {
-            if (!$io->confirm("Are you sure you want to delete index '{$name}'?", false)) {
-                $io->info('Deletion cancelled');
-
-                return Command::SUCCESS;
-            }
-            $this->indexManager->getIndex($name)->delete();
+            return Command::SUCCESS;
+        }
+        switch ($type) {
+            case Index::FIELD_INDEX:
+                $this->indexManager->getIndex($name)->delete();
+                break;
+            case IndexTemplate::FIELD_TEMPLATE:
+                $this->indexManager->getIndexTemplate($name)->delete();
+                break;
+            case DataStream::FIELD_DATA_STREAM:
+                $this->indexManager->getDataStream($name)->delete();
+                break;
         }
 
         return Command::SUCCESS;

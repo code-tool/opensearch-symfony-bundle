@@ -38,15 +38,16 @@ class ListCommand extends Command
         $io->title('Configured OpenSearch Indexes');
 
         $rows = [];
-        foreach ($indexes as $config) {
+        foreach ($indexes as $index) {
             $rows[] = [
-                $config->getAlias(),
-                $config->getType(),
-                $config->getPattern()
+                $index->getName(),
+                $index->getType(),
+                \json_encode($index->getProperties()),
+                $index->exists() ? 'Yes' : 'No',
             ];
         }
 
-        $io->table(['Alias', 'Type', 'Pattern'], $rows);
+        $io->table(['Name', 'Type', 'Mappings', 'Exists'], $rows);
 
         return Command::SUCCESS;
 
