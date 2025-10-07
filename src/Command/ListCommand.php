@@ -28,7 +28,7 @@ class ListCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('index', InputArgument::REQUIRED, 'Index from configuration');
+        $this->addArgument('index', InputArgument::OPTIONAL, 'Index from configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
