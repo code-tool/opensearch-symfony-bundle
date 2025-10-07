@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CodeTool\OpenSearch\Symfony\DependencyInjection;
 
 use CodeTool\OpenSearch\Field\FieldFactoryInterface;
+use CodeTool\OpenSearch\Index\AbstractStorage;
 use CodeTool\OpenSearch\Index\DataStream;
 use CodeTool\OpenSearch\Index\Index;
 use CodeTool\OpenSearch\Index\IndexTemplate;
@@ -47,7 +48,7 @@ class OpenSearchExtension extends Extension
             new Definition(DataStream::class)
                 ->setArguments(
                     [
-                        $config[IndexTemplate::FIELD_PREFIX] ?? '',
+                        $config[AbstractStorage::FIELD_PREFIX] ?? '',
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
@@ -90,7 +91,7 @@ class OpenSearchExtension extends Extension
             new Definition(Index::class)
                 ->setArguments(
                     [
-                        $config[IndexTemplate::FIELD_PREFIX] ?? '',
+                        $config[AbstractStorage::FIELD_PREFIX] ?? '',
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),

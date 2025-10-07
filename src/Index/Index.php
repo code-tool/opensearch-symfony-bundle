@@ -16,6 +16,7 @@ class Index extends AbstractStorage
     public const string FIELD_PROPERTIES = 'properties';
 
     public function __construct(
+        string $prefix,
         string $name,
         Client $client,
         private readonly FieldFactoryInterface $factory,
@@ -23,7 +24,7 @@ class Index extends AbstractStorage
         private readonly mixed $dynamic,
         private readonly array $properties,
     ) {
-        parent::__construct($name, $client);
+        parent::__construct($prefix, $name, $client);
     }
 
     /**
