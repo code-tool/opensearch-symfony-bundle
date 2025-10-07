@@ -182,6 +182,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('analyzer')->end()
                         ->scalarNode('search_analyzer')->end()
                         ->booleanNode('index')->defaultTrue()->end()
+                        ->booleanNode('enabled')->defaultTrue()->end()
                         ->booleanNode('dynamic')->defaultTrue()->end();
         if ($depth < 8) {
             $builder->append($this->getPropertiesNode($depth + 1));

@@ -41,7 +41,6 @@ class BuiltinFieldFactory implements FieldFactoryInterface
                 $config[KeywordField::FIELD_INDEX] ?? true,
             ),
             ObjectField::FIELD_TYPE_OBJECT      => new ObjectField(
-
                 $name,
                 $this,
                 $config[ObjectField::FIELD_ENABLED] ?? true,
