@@ -3,6 +3,7 @@
 namespace CodeTool\OpenSearch\Index;
 
 use CodeTool\OpenSearch\Field\FieldFactoryInterface;
+use CodeTool\OpenSearch\Field\FieldInterface;
 use CodeTool\OpenSearch\Response\Response;
 use OpenSearch\Client;
 
@@ -28,11 +29,14 @@ class Index
         private readonly array $properties,
     ) {}
 
+    /**
+     * @return array<string,FieldInterface>
+     */
     public function getProperties(): array
     {
         $properties = [];
         foreach ($this->properties as $name => $property) {
-            $properties[$name] = $this->factory->create($name, $property)->getDefinition();
+            $properties[$name] = $this->factory->create($name, $property);
         }
 
         return $properties;
