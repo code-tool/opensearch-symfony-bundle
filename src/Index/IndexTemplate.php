@@ -32,13 +32,18 @@ class IndexTemplate
         return $this->name;
     }
 
-    public function create(): Response
+    public function getProperties(): array
     {
         $properties = [];
         foreach ($this->properties as $name => $property) {
             $properties[$name] = $this->factory->create($name, $property)->getDefinition();
         }
 
+        return $properties;
+    }
+
+    public function create(): Response
+    {
         return new Response(
             $this->client->indices()->putIndexTemplate(
                 [
@@ -49,7 +54,10 @@ class IndexTemplate
                             self::FIELD_SETTINGS => $this->settings,
                             self::FIELD_MAPPINGS => [
                                 self::FIELD_DYNAMIC    => $this->dynamic,
-                                self::FIELD_PROPERTIES => $properties
+                                self::FIELD_PROPERTIES => \array_map(
+                                    static fn ($property) => $property->getDefinition(),
+                                    $this->getProperties()
+                                )
                             ]
                         ]
                     ]
