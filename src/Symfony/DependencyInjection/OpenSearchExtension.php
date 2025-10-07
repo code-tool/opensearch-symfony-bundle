@@ -31,24 +31,24 @@ class OpenSearchExtension extends Extension
         $loader->load('services.yaml');
 
         foreach ($config['data_streams'] as $name => $data) {
-            $this->processDataStreams($name, $data, $container);
+            $this->processDataStreams($name, $config['prefix'], $data, $container);
         }
         foreach ($config['index_templates'] as $name => $data) {
-            $this->processIndexTemplates($name, $data, $container);
+            $this->processIndexTemplates($name, $config['prefix'], $data, $container);
         }
         foreach ($config['indexes'] as $name => $data) {
-            $this->processIndexes($name, $data, $container);
+            $this->processIndexes($name, $config['prefix'], $data, $container);
         }
     }
 
-    private function processDataStreams(string $name, array $config, ContainerBuilder $container): void
+    private function processDataStreams(string $name, string $prefix, array $config, ContainerBuilder $container): void
     {
         $container->setDefinition(
             'opensearch.data_stream.' . $name,
             new Definition(DataStream::class)
                 ->setArguments(
                     [
-                        $config[AbstractStorage::FIELD_PREFIX] ?? '',
+                        $prefix,
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
@@ -63,14 +63,18 @@ class OpenSearchExtension extends Extension
         );
     }
 
-    private function processIndexTemplates(string $name, array $config, ContainerBuilder $container): void
-    {
+    private function processIndexTemplates(
+        string $name,
+        string $prefix,
+        array $config,
+        ContainerBuilder $container
+    ): void {
         $container->setDefinition(
             'opensearch.index_template.' . $name,
             new Definition(IndexTemplate::class)
                 ->setArguments(
                     [
-                        $config[IndexTemplate::FIELD_PREFIX] ?? '',
+                        $prefix,
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
@@ -84,14 +88,14 @@ class OpenSearchExtension extends Extension
         );
     }
 
-    private function processIndexes(string $name, array $config, ContainerBuilder $container): void
+    private function processIndexes(string $name, string $prefix, array $config, ContainerBuilder $container): void
     {
         $container->setDefinition(
             'opensearch.index.' . $name,
             new Definition(Index::class)
                 ->setArguments(
                     [
-                        $config[AbstractStorage::FIELD_PREFIX] ?? '',
+                        $prefix,
                         $name,
                         new Reference(Client::class),
                         new Reference(FieldFactoryInterface::class),
