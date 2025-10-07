@@ -48,36 +48,27 @@ class DataStream extends AbstractStorage
     public function create(): bool
     {
         return new Response(
-                   $this->getClient()->indices()->putIndexTemplate(
-                       [
-                           self::FIELD_NAME => $this->getName(),
-                           self::FIELD_BODY => [
-                               self::FIELD_INDEX_PATTERNS => $this->patterns,
-                               self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => [self::FIELD_NAME => $this->timestampField]],
-                               self::FIELD_TEMPLATE       => [
-                                   self::FIELD_SETTINGS => $this->settings,
-                                   self::FIELD_MAPPINGS => [
-                                       self::FIELD_DYNAMIC    => $this->dynamic,
-                                       self::FIELD_PROPERTIES => \array_map(
-                                           static fn ($property) => $property->getDefinition(),
-                                           $this->getProperties()
-                                       )
-                                   ]
-                               ]
-                           ]
+            $this->getClient()->indices()->putIndexTemplate(
+                [
+                    self::FIELD_NAME => $this->getName(),
+                    self::FIELD_BODY => [
+                        self::FIELD_INDEX_PATTERNS => $this->patterns,
+                        self::FIELD_DATA_STREAM    => [self::FIELD_TIMESTAMP_FIELD => [self::FIELD_NAME => $this->timestampField]],
+                        self::FIELD_TEMPLATE       => [
+                            self::FIELD_SETTINGS => $this->settings,
+                            self::FIELD_MAPPINGS => [
+                                self::FIELD_DYNAMIC    => $this->dynamic,
+                                self::FIELD_PROPERTIES => \array_map(
+                                    static fn ($property) => $property->getDefinition(),
+                                    $this->getProperties()
+                                )
+                            ]
+                        ]
+                    ]
 
-                       ]
-                   )
-               )->isAcknowledged()
-               && new Response(
-                   $this->getClient()->indices()->createDataStream(
-                       [
-                           self::FIELD_NAME => $this->getName(),
-                           self::FIELD_BODY => []
-
-                       ]
-                   )
-               )->isAcknowledged();
+                ]
+            )
+        )->isAcknowledged();
     }
 
     public function delete(): bool

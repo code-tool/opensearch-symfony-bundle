@@ -8,6 +8,7 @@ use OpenSearch\Client;
 class AbstractStorage
 {
     public const string FIELD_BODY = 'body';
+    public const string FIELD_CREATE = 'create';
     public const string FIELD_INDEX = 'index';
     public const string FIELD_UNDERSCORE_INDEX = '_index';
     public const string FIELD_DOC = 'doc';
@@ -37,7 +38,7 @@ class AbstractStorage
     {
         $body = [];
         foreach ($documents as $document) {
-            $body[] = [self::FIELD_INDEX => [self::FIELD_UNDERSCORE_INDEX => $this->name]];
+            $body[] = [self::FIELD_CREATE => [self::FIELD_UNDERSCORE_INDEX => $this->name]];
             $body[] = $document;
         }
 
