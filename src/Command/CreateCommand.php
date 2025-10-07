@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Command;
 
+use CodeTool\OpenSearch\Index\AbstractStorage;
 use CodeTool\OpenSearch\Index\DataStream;
 use CodeTool\OpenSearch\Index\Index;
 use CodeTool\OpenSearch\Index\IndexTemplate;
@@ -23,7 +24,7 @@ class CreateCommand extends Command
 {
     public const array ALLOWED_TYPES
         = [
-            Index::FIELD_INDEX,
+            AbstractStorage::FIELD_INDEX,
             DataStream::FIELD_DATA_STREAM,
             IndexTemplate::FIELD_TEMPLATE
         ];
@@ -44,7 +45,7 @@ class CreateCommand extends Command
                 null,
                 InputArgument::OPTIONAL,
                 'Type of resource to create, default: index',
-                Index::FIELD_INDEX
+                AbstractStorage::FIELD_INDEX
             )
             ->addArgument('name', InputArgument::OPTIONAL, 'Name from the opensearch configuration');
     }
@@ -65,7 +66,7 @@ class CreateCommand extends Command
             return Command::SUCCESS;
         }
         switch ($type) {
-            case Index::FIELD_INDEX:
+            case AbstractStorage::FIELD_INDEX:
                 $this->indexManager->getIndex($name)->create();
                 break;
             case IndexTemplate::FIELD_TEMPLATE:

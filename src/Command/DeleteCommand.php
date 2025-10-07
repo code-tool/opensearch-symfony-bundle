@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CodeTool\OpenSearch\Command;
 
+use CodeTool\OpenSearch\Index\AbstractStorage;
 use CodeTool\OpenSearch\Index\DataStream;
 use CodeTool\OpenSearch\Index\Index;
 use CodeTool\OpenSearch\Index\IndexTemplate;
@@ -23,7 +24,7 @@ class DeleteCommand extends Command
 {
     public const array ALLOWED_TYPES
         = [
-            Index::FIELD_INDEX,
+            AbstractStorage::FIELD_INDEX,
             DataStream::FIELD_DATA_STREAM,
             IndexTemplate::FIELD_TEMPLATE
         ];
@@ -38,7 +39,15 @@ class DeleteCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('index', InputArgument::OPTIONAL, 'Index from configuration');
+        $this
+            ->addOption(
+                '--type',
+                null,
+                InputArgument::OPTIONAL,
+                'Type of resource to delete, default: index',
+                AbstractStorage::FIELD_INDEX
+            )
+            ->addArgument('name', InputArgument::OPTIONAL, 'Name from the opensearch configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -51,13 +60,13 @@ class DeleteCommand extends Command
             );
         }
         $name = $input->getArgument('name');
-        if (!$io->confirm(\sprintf('Are you sure you want to create %s "%s"?', $type, $name), false)) {
+        if (!$io->confirm(\sprintf('Are you sure you want to delete %s "%s"?', $type, $name), false)) {
             $io->info('Creation cancelled');
 
             return Command::SUCCESS;
         }
         switch ($type) {
-            case Index::FIELD_INDEX:
+            case AbstractStorage::FIELD_INDEX:
                 $this->indexManager->getIndex($name)->delete();
                 break;
             case IndexTemplate::FIELD_TEMPLATE:
