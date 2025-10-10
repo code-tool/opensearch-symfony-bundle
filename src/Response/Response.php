@@ -14,4 +14,9 @@ class Response
                && \is_bool($this->response[self::FIELD_ACKNOWLEDGED])
                && $this->response[self::FIELD_ACKNOWLEDGED];
     }
+
+    public function getDocuments(): array
+    {
+        return $this->response;
+    }
 }

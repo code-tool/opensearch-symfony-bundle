@@ -14,6 +14,7 @@ class AbstractStorage
     public const string FIELD_UNDERSCORE_INDEX = '_index';
     public const string FIELD_DOC = 'doc';
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
+    public const string FIELD_QUERY = 'query';
 
     public function __construct(
         private readonly string $prefix,
@@ -26,11 +27,6 @@ class AbstractStorage
         return $this->prefix;
     }
 
-    public function getName(): string
-    {
-        return $this->prefix . $this->name;
-    }
-
     public function getClient(): Client
     {
         return $this->client;
@@ -38,7 +34,14 @@ class AbstractStorage
 
     public function add(array $document): Response
     {
-        return new Response($this->client->index([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $document]));
+        return new Response(
+            $this->client->index([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $document])
+        );
+    }
+
+    public function getName(): string
+    {
+        return $this->prefix . $this->name;
     }
 
     public function addBulk(array $documents): Response
@@ -69,5 +72,20 @@ class AbstractStorage
     public function update(array $document): Response
     {
         return new Response($this->client->index([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $document]));
+    }
+
+    public function find(array $query): Response
+    {
+        return new Response(
+            $this->client->delete(
+                [
+                    self::FIELD_INDEX => $this->name,
+                    self::FIELD_BODY  => [
+                        self::FIELD_QUERY => $query
+                    ]
+                ]
+            )
+        );
+
     }
 }
