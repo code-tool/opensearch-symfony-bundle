@@ -5,6 +5,8 @@ namespace CodeTool\OpenSearch\Response;
 class Response
 {
     public const string FIELD_ACKNOWLEDGED = 'acknowledged';
+    public const string FIELD_HITS = 'hits';
+    public const string FIELD_SOURCE = '_source';
 
     public function __construct(private readonly array $response) {}
 
@@ -17,8 +19,14 @@ class Response
 
     public function getDocuments(): iterable
     {
-        foreach ($this->response['hits'] ?? [] as $document) {
-            yield $document['_source'] ?? [];
+        if (false === \array_key_exists(self::FIELD_HITS, $this->response)) {
+            return [];
+        }
+        if (false === \array_key_exists(self::FIELD_HITS, $this->response[self::FIELD_HITS])) {
+            return [];
+        }
+        foreach ($this->response[self::FIELD_HITS][self::FIELD_HITS] ?? [] as $document) {
+            yield $document[self::FIELD_SOURCE] ?? [];
         }
     }
 }
