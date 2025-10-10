@@ -15,6 +15,9 @@ class AbstractStorage
     public const string FIELD_DOC = 'doc';
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
     public const string FIELD_QUERY = 'query';
+    public const string FIELD_QUERY_BOOL = 'bool';
+    public const string FIELD_QUERY_MUST = 'must';
+    public const string FIELD_QUERY_TERM = 'term';
 
     public function __construct(
         private readonly string $prefix,
