@@ -15,6 +15,8 @@ class AbstractStorage
     public const string FIELD_DOC = 'doc';
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
     public const string FIELD_QUERY = 'query';
+    public const string FIELD_FROM = 'from';
+    public const string FIELD_SIZE = 'size';
     public const string FIELD_QUERY_BOOL = 'bool';
     public const string FIELD_QUERY_MUST = 'must';
     public const string FIELD_QUERY_TERM = 'term';
@@ -74,16 +76,20 @@ class AbstractStorage
 
     public function update(array $document): Response
     {
-        return new Response($this->client->index([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $document]));
+        return new Response(
+            $this->client->index([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $document])
+        );
     }
 
-    public function find(array $query): Response
+    public function find(array $query, int $limit = 30, int $offset = 0): Response
     {
         return new Response(
             $this->client->search(
                 [
                     self::FIELD_INDEX => [$this->getName()],
                     self::FIELD_BODY  => [
+                        self::FIELD_FROM  => $offset,
+                        self::FIELD_SIZE  => $limit,
                         self::FIELD_QUERY => $query
                     ]
                 ]
