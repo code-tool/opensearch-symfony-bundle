@@ -5,7 +5,7 @@ namespace CodeTool\OpenSearch\Index;
 use CodeTool\OpenSearch\Response\Response;
 use OpenSearch\Client;
 
-class AbstractStorage
+abstract class AbstractStorage
 {
     public const string FIELD_PREFIX = 'prefix';
     public const string FIELD_BODY = 'body';
