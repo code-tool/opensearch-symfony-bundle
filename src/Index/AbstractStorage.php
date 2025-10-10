@@ -62,7 +62,7 @@ class AbstractStorage
         return new Response(
             $this->client->update(
                 [
-                    self::FIELD_INDEX => $this->name,
+                    self::FIELD_INDEX => $this->getName(),
                     self::FIELD_BODY  => [self::FIELD_DOC => $document, self::FIELD_DOC_AS_UPSERT => true]
                 ]
             )
@@ -71,21 +71,20 @@ class AbstractStorage
 
     public function update(array $document): Response
     {
-        return new Response($this->client->index([self::FIELD_INDEX => $this->name, self::FIELD_BODY => $document]));
+        return new Response($this->client->index([self::FIELD_INDEX => $this->getName(), self::FIELD_BODY => $document]));
     }
 
     public function find(array $query): Response
     {
         return new Response(
-            $this->client->delete(
+            $this->client->search(
                 [
-                    self::FIELD_INDEX => $this->name,
+                    self::FIELD_INDEX => [$this->getName()],
                     self::FIELD_BODY  => [
                         self::FIELD_QUERY => $query
                     ]
                 ]
             )
         );
-
     }
 }

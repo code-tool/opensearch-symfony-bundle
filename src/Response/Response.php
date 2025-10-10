@@ -15,8 +15,10 @@ class Response
                && $this->response[self::FIELD_ACKNOWLEDGED];
     }
 
-    public function getDocuments(): array
+    public function getDocuments(): iterable
     {
-        return $this->response;
+        foreach ($this->response['hits'] ?? [] as $document) {
+            yield $document['_source'] ?? [];
+        }
     }
 }
