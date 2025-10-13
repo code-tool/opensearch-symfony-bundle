@@ -15,6 +15,7 @@ abstract class AbstractStorage
     public const string FIELD_DOC = 'doc';
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
     public const string FIELD_QUERY = 'query';
+    public const string FIELD_SORT = 'sort';
     public const string FIELD_FROM = 'from';
     public const string FIELD_SIZE = 'size';
     public const string FIELD_QUERY_BOOL = 'bool';
@@ -81,7 +82,7 @@ abstract class AbstractStorage
         );
     }
 
-    public function find(array $query, int $limit = 30, int $offset = 0): Response
+    public function find(array $query, array $sort = [], int $limit = 30, int $offset = 0): Response
     {
         return new Response(
             $this->client->search(
@@ -90,7 +91,8 @@ abstract class AbstractStorage
                     self::FIELD_BODY  => [
                         self::FIELD_FROM  => $offset,
                         self::FIELD_SIZE  => $limit,
-                        self::FIELD_QUERY => $query
+                        self::FIELD_QUERY => $query,
+                        self::FIELD_SORT  => $sort
                     ]
                 ]
             )
