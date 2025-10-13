@@ -16,6 +16,9 @@ abstract class AbstractStorage
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
     public const string FIELD_QUERY = 'query';
     public const string FIELD_SORT = 'sort';
+    public const string FIELD_ORDER = 'order';
+    public const string FIELD_ORDER_ASC = 'asc';
+    public const string FIELD_ORDER_DESC = 'desc';
     public const string FIELD_FROM = 'from';
     public const string FIELD_SIZE = 'size';
     public const string FIELD_QUERY_BOOL = 'bool';
