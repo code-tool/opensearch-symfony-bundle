@@ -11,6 +11,7 @@ abstract class AbstractStorage
     public const string FIELD_BODY = 'body';
     public const string FIELD_CREATE = 'create';
     public const string FIELD_INDEX = 'index';
+    public const string FIELD_ID = 'id';
     public const string FIELD_UNDERSCORE_INDEX = '_index';
     public const string FIELD_DOC = 'doc';
     public const string FIELD_DOC_AS_UPSERT = 'doc_as_upsert';
@@ -66,16 +67,22 @@ abstract class AbstractStorage
         );
     }
 
-    public function upsert(array $document): Response
+    public function upsert(string $id, array $document): Response
     {
         return new Response(
             $this->client->update(
                 [
                     self::FIELD_INDEX => $this->getName(),
+                    self::FIELD_ID    => $id,
                     self::FIELD_BODY  => [self::FIELD_DOC => $document, self::FIELD_DOC_AS_UPSERT => true]
                 ]
             )
         );
+    }
+
+    public function remove(string $id): Response
+    {
+        return new Response($this->client->delete([self::FIELD_INDEX => $this->getName(), self::FIELD_ID => $id]));
     }
 
     public function update(array $document): Response

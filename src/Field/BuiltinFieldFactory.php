@@ -50,6 +50,8 @@ class BuiltinFieldFactory implements FieldFactoryInterface
             TextField::FIELD_TYPE_TEXT          => new TextField(
                 $name,
                 $config[TextField::FIELD_INDEX] ?? true,
+                $config[TextField::FIELD_ANALYZER] ?? null,
+                $config[TextField::FIELD_SEARCH_ANALYZER] ?? null,
             ),
             default                             => throw new \InvalidArgumentException(
                 \sprintf('Unknown field type: %s', $config['type'])

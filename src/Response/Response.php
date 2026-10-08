@@ -7,6 +7,7 @@ class Response
     public const string FIELD_ACKNOWLEDGED = 'acknowledged';
     public const string FIELD_HITS = 'hits';
     public const string FIELD_SOURCE = '_source';
+    public const string FIELD_ID = '_id';
 
     public function __construct(private readonly array $response) {}
 
@@ -17,6 +18,9 @@ class Response
                && $this->response[self::FIELD_ACKNOWLEDGED];
     }
 
+    /**
+     * @return iterable<string, array> the sources of the hits, keyed by their id
+     */
     public function getDocuments(): iterable
     {
         if (false === \array_key_exists(self::FIELD_HITS, $this->response)) {
@@ -26,7 +30,7 @@ class Response
             return [];
         }
         foreach ($this->response[self::FIELD_HITS][self::FIELD_HITS] ?? [] as $document) {
-            yield $document[self::FIELD_SOURCE] ?? [];
+            yield $document[self::FIELD_ID] => $document[self::FIELD_SOURCE] ?? [];
         }
     }
 }

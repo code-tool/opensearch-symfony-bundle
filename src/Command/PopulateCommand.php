@@ -34,15 +34,13 @@ class PopulateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        if ('' === ($index = $input->getArgument('index'))) {
+        if (null === ($index = $input->getArgument('index'))) {
             if (!$io->confirm("Are you sure you want to create ALL indexes'?", false)) {
                 $io->info('Creation cancelled');
 
                 return Command::SUCCESS;
             }
-            foreach ($this->indexManager->getIndexes() as $index) {
-                $index->reIndex();
-            }
+            $this->indexManager->reindexAll();
         } else {
             $this->indexManager->reindex($index);
         }

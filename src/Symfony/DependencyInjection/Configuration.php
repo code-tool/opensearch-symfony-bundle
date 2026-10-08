@@ -206,6 +206,13 @@ class Configuration implements ConfigurationInterface
                 ->ignoreExtraKeys(false)
                 ->children()
                     ->arrayNode('analysis')
+                        // OpenSearch reads analysis components from the singular keys and ignores unknown ones
+                        ->validate()
+                            ->always(static fn (array $analysis): array => \array_filter([
+                                'filter'   => $analysis['filters'] ?? [],
+                                'analyzer' => $analysis['analyzers'] ?? [],
+                            ]))
+                        ->end()
                         ->children()
                             ->arrayNode('filters')
                                 ->useAttributeAsKey('name')

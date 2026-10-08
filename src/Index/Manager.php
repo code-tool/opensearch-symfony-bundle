@@ -86,11 +86,39 @@ class Manager
         return $this->getIndex($name)->exists();
     }
 
+    public function addProvider(string $name, ProviderInterface $provider): Manager
+    {
+        $this->providers[$name] = $provider;
+
+        return $this;
+    }
+
     public function reindex(string $name): bool
     {
-        foreach ($this->getProvider($name) as $document) {
-            $this->getIndex($name)->upsert($document);
+        foreach ($this->getProvider($name)->getDocuments() as $id => $document) {
+            $this->getIndex($name)->upsert($id, $document);
         }
+
+        return true;
+    }
+
+    public function reindexAll(): bool
+    {
+        foreach (\array_keys($this->providers) as $name) {
+            $this->reindex($name);
+        }
+
+        return true;
+    }
+
+    public function reindexDocument(string $name, string $id): bool
+    {
+        if (null === ($document = $this->getProvider($name)->getDocument($id))) {
+            $this->getIndex($name)->remove($id);
+
+            return true;
+        }
+        $this->getIndex($name)->upsert($id, $document);
 
         return true;
     }
